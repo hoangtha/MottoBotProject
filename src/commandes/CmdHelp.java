@@ -19,7 +19,7 @@ public class CmdHelp implements Commande {
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String[] arguments) {
+	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		e.getChannel().sendTyping();
 		e.getChannel()

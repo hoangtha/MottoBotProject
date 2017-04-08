@@ -20,7 +20,7 @@ public class CmdLeave implements Commande {
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String[] arguments) {
+	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		e.getChannel().sendMessage("byebye!").queue();
 		AudioManager manager = bot.getJda().getGuilds().get(0).getAudioManager();
 		manager.closeAudioConnection();

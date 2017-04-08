@@ -20,7 +20,7 @@ public class CmdVoice implements Commande {
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String[] arguments) {
+	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		AudioManager manager = bot.getJda().getGuilds().get(0).getAudioManager();
 		e.getChannel().sendMessage("J'arrive dans la taverne").queue();
 		manager.openAudioConnection(e.getAuthor().getJDA().getVoiceChannelByName("Taverne", true).get(0));

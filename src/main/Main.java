@@ -96,7 +96,7 @@ public class Main implements EventListener, ConnectionListener
 	        if (matcher.matches()) {
 	        	// Potentielle commande
 	        	String commande = matcher.group(1).toLowerCase();
-	        	String[] arguments = matcher.group(2).isEmpty() ? new String[0] : matcher.group(2).split(" ");
+	        	String arguments = matcher.group(2).isEmpty() ? "" : matcher.group(2);
 	        	this.lireCommande(e, commande, arguments);
 	        }
 			else {
@@ -105,7 +105,7 @@ public class Main implements EventListener, ConnectionListener
 		}
 	}
 
-	private void lireCommande(MessageReceivedEvent e, String commande, String[] arguments) {
+	private void lireCommande(MessageReceivedEvent e, String commande, String arguments) {
 		boolean result = false;
 		switch(commande)
 		{

@@ -21,7 +21,7 @@ public class CmdClear implements Commande {
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String[] arguments) {
+	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		List<Message> temp = new ArrayList<Message>();
 		int nbMessageInitial = 0;
 		bot.addMsg(e.getMessage());

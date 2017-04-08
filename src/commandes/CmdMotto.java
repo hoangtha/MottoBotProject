@@ -25,124 +25,108 @@ public class CmdMotto implements Commande {
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String[] arguments) {
+	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 
 		e.getChannel().sendTyping();
 		
 		int selector = CmdMotto.rand.nextInt(3);
 		String url = "";
-		int ok = 0;
-
-		String strGetted = e.getMessage().getContent();
-		String[] arg;
-		arg = strGetted.split(" ");
-
-		if (arg.length > 1)
-		{
-			ok = 1;
-		} 
-		else if (arg[0].equals("=motto"))
-		{
-			ok = 2;
-		}
 		int nbRecherche = 0;
-		
-		while(nbRecherche<3 && ok != 0)
+		Document doc;
+		String imageUrl = "";
+		 
+		while(nbRecherche<3)
 		{
-			if (ok != 0)
+			switch(selector)
 			{
-				if (selector == 0)
-				{
-					if (ok == 1)
+				case 0:
+					if (!arguments.equals(""))
 					{
-						url = "https://yande.re/post?tags=order:random+" + strGetted.substring(7);
-					} else if (ok == 2)
+						url = "https://yande.re/post?tags=order:random+" + arguments;
+					} else
 					{
 						url = "https://yande.re/post?tags=order:random+" + Main.DEFAULT_SEARCH;
 					}
+					break;
 
-				} else if (selector == 1)
-				{
-					if (ok == 1)
+				
+				case 1:
+					if (!arguments.equals(""))
 					{
-						url = "http://konachan.com/post?tags=order:random+" + strGetted.substring(7);
-					} else if (ok == 2)
+						url = "http://konachan.com/post?tags=order:random+" + arguments;
+					} else
 					{
 						url = "http://konachan.com/post?tags=order:random+" + Main.DEFAULT_SEARCH;
 					}
-				} else if (selector == 2)
-				{
-
-					if (ok == 1)
+					break;
+				case 2:
+					if (!arguments.equals(""))
 					{
-						url = "https://chan.sankakucomplex.com/?tags=order:random+" + strGetted.substring(7)
+						url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments
 								+ "&commit=Search";
-					} else if (ok == 2)
+					} else
 					{
 						url = "https://chan.sankakucomplex.com/?tags=order:random+" + Main.DEFAULT_SEARCH + "&commit=Search";
 					}
-
-				}
-
-				Document doc;
-				String imageUrl = "";
-				try
-				{
-					doc = Jsoup.connect(url).get();
-					if (selector != 2)
-					{
-						imageUrl = doc.select("span[class=plid]").stream().findAny().map(docs -> docs.html())
-								.orElse(null).substring(4);
-					} else
-					{
-
-						imageUrl = "https://chan.sankakucomplex.com"
-								+ doc.select("span[class=thumb blacklisted]").stream().findAny()
-										.map(docs -> docs.html()).orElse(null).substring(9, 27).replace("\"", "");
-					}
-
-					doc = Jsoup.connect(imageUrl).get();
-					imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
-							.orElse(null);
-
-				} catch (IOException e1)
-				{
-
-					doc = null;
-					imageUrl = null;
-				} catch (NullPointerException e2)
-				{
-
-					doc = null;
-					imageUrl = null;
-				}
-
-				if (imageUrl != null)
-				{
-					if (selector == 0)
-					{
-						e.getChannel().sendMessage(imageUrl).queue();
-					} else
-					{
-						if (imageUrl.startsWith("//"))
-						{
-							e.getChannel().sendMessage("https:" + imageUrl).queue();
-						} else
-						{
-							e.getChannel().sendMessage(imageUrl).queue();
-						}
-
-					}
-					System.out.println(e.getAuthor().getName() + " : " + imageUrl);
 					break;
+			}
+			
+			try
+			{
+				doc = Jsoup.connect(url).get();
+				if (selector != 2)
+				{
+					imageUrl = doc.select("span[class=plid]").stream().findAny().map(docs -> docs.html())
+							.orElse(null).substring(4);
 				} else
 				{
-					//e.getChannel().sendMessage("ouin ouin, marche pas...").queue();
-					selector = (selector + 1)%3;
-					nbRecherche++;
+
+					imageUrl = "https://chan.sankakucomplex.com"
+							+ doc.select("span[class=thumb blacklisted]").stream().findAny()
+									.map(docs -> docs.html()).orElse(null).substring(9, 27).replace("\"", "");
 				}
+
+				doc = Jsoup.connect(imageUrl).get();
+				imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
+						.orElse(null);
+
+			} catch (IOException e1)
+			{
+
+				doc = null;
+				imageUrl = null;
+			} catch (NullPointerException e2)
+			{
+
+				doc = null;
+				imageUrl = null;
 			}
+
+			if (imageUrl != null)
+			{
+				if (selector == 0)
+				{
+					e.getChannel().sendMessage(imageUrl).queue();
+				} else
+				{
+					if (imageUrl.startsWith("//"))
+					{
+						e.getChannel().sendMessage("https:" + imageUrl).queue();
+					} else
+					{
+						e.getChannel().sendMessage(imageUrl).queue();
+					}
+
+				}
+				System.out.println(e.getAuthor().getName() + " : " + imageUrl);
+				break;
+			} else
+			{
+				selector = (selector + 1)%3;
+				nbRecherche++;
+			}
+			
 			if(nbRecherche==3)
 			{
 				e.getChannel().sendMessage("ouin ouin, marche pas...").queue();
