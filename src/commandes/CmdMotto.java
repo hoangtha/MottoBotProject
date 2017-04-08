@@ -91,17 +91,11 @@ public class CmdMotto implements Commande {
 				imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
 						.orElse(null);
 
-			} catch (IOException e1)
+			} catch (IOException | NullPointerException e1)
 			{
-
 				doc = null;
 				imageUrl = null;
-			} catch (NullPointerException e2)
-			{
-
-				doc = null;
-				imageUrl = null;
-			}
+			} 
 
 			if (imageUrl != null)
 			{
@@ -119,7 +113,7 @@ public class CmdMotto implements Commande {
 					}
 
 				}
-				System.out.println(e.getAuthor().getName() + " : " + imageUrl);
+				System.out.println(e.getAuthor().getName() + " " +arguments +" : " + imageUrl);
 				break;
 			} else
 			{

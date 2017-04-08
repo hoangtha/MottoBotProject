@@ -24,7 +24,11 @@ public class CmdHelp implements Commande {
 		e.getChannel().sendTyping();
 		e.getChannel()
 				.sendMessage(
-						"```=motto [tag]: ??(default tag : nico_robin) \n=mottoclear : Supprime tout les motto de tout les channels (X)\n=mottohelp Affiche les commandes disponible```")
+						"```=motto [tag]: Affiche un lien vers l'image voulue\n"
+						+ "=mottoclear : Nettoie un peu\n"
+						+ "=mottohelp Affiche les commandes disponible\n="
+						+ "mottovoice : Rejoint le channel vocal Taverne\n"
+						+ "=mottoleave : Quitte le channel vocal```")
 				.queue();
 		return true;
 	}
