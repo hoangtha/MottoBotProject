@@ -35,6 +35,8 @@ public class Main implements EventListener, ConnectionListener
 	private boolean stop = false;
 
 	private List<Message> msgTab;
+	
+	private List<Message> temp;
 
 	private static final String DEFAULT = "nico_robin";
 
@@ -61,7 +63,7 @@ public class Main implements EventListener, ConnectionListener
 		jda.addEventListener(this);
 		System.out.println("Connecte avec: " + jda.getSelfUser().getName());
 		int i;
-		System.out.println("Le bot est autorisé sur " + (i = jda.getGuilds().size()) + " serveur" + (i > 1 ? "s" : ""));
+		System.out.println("Le bot est autorisÃ© sur " + (i = jda.getGuilds().size()) + " serveur" + (i > 1 ? "s" : ""));
 		jda.getPresence().setGame(Game.of("=motto"));
 		msgTab = new ArrayList<Message>();
 
@@ -109,12 +111,14 @@ public class Main implements EventListener, ConnectionListener
 				if (arg.length > 1)
 				{
 					ok = 1;
-				} else if (arg[0].equals("=motto"))
+				} 
+				else if (arg[0].equals("=motto"))
 				{
 					ok = 2;
 				}
 				int nbRecherche = 0;
-				while(nbRecherche<3)
+				
+				while(nbRecherche<3 && ok != 0)
 				{
 					if (ok != 0)
 					{
@@ -222,7 +226,7 @@ public class Main implements EventListener, ConnectionListener
 			{
 				msgTab.add(e.getMessage());
 				e.getChannel().sendTyping();
-				e.getChannel().sendMessage("dé-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pédé va.")
+				e.getChannel().sendMessage("dÃ©-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pÃ©dÃ© va.")
 						.queue();
 
 			}
@@ -233,57 +237,66 @@ public class Main implements EventListener, ConnectionListener
 				e.getChannel().sendTyping();
 				e.getChannel()
 						.sendMessage(
-								"```=motto [tag]: è_é (par defaut c'est nico_robin) \n=mottoclear : Supprime tout les motto de tout les channels\n=mottohelp Affiche les commandes disponible```")
+								"```=motto [tag]: ??(default tag : nico_robin) \n=mottoclear : Supprime tout les motto de tout les channels (X)\n=mottohelp Affiche les commandes disponible```")
 						.queue();
 
 			}
 
 			if (e.getMessage().getContent().equalsIgnoreCase("=mottoclear"))
 			{
-
+				temp = new ArrayList<Message>();
 				int nbMessageInitial = 0;
 				msgTab.add(e.getMessage());
 				while (msgTab.size() != 0)
 				{
 					Message messageToDelete = msgTab.get(msgTab.size() - 1);
-					messageToDelete.deleteMessage().queue();
-					nbMessageInitial++;
-					msgTab.remove(msgTab.size() - 1);
+					if(messageToDelete.getChannel().equals(e.getMessage().getChannel()))
+					{
+						messageToDelete.deleteMessage().queue();
+						nbMessageInitial++;
+					}
+					else
+					{
+						temp.add(messageToDelete);
+					}
+					msgTab.remove(msgTab.size() - 1); 
+					
+					
 				}
+				msgTab = temp;
 				
 
 				if (nbMessageInitial > 1)
 				{
-					e.getChannel().sendMessage(nbMessageInitial + " messages effacés.").queue();
+					e.getChannel().sendMessage(nbMessageInitial + " messages effacÃ©s.").queue();
 				} else
 				{
-					e.getChannel().sendMessage("Pas de messages à effacer...").queue();
+					e.getChannel().sendMessage("Pas de messages Ã  effacer...").queue();
 				}
 
 			}
 
-			if (e.getMessage().getContent().equals("http")
-					|| e.getMessage().getContent().equals("Veuillez ré-itérer votre recherche... ( =motto [tags] )")
+			if (e.getMessage().getContent().startsWith("http")
+					|| e.getMessage().getContent().equals("ouin ouin, marche pas...")
 					|| e.getMessage().getContent()
-							.equals("dé-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pédé va."))
+							.equals("dÃ©-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pÃ©dÃ© va."))
 			{
-				if (e.getMessage().getAuthor().equals("Motto bot"))
+				if (e.getMessage().getAuthor().getName().equals("Motto bot"))
 				{
 					msgTab.add(e.getMessage());
 				}
 			}
 
-			// Fonction qui ne sert à rien
+			// Fonction qui ne sert Ã  rien
 			if (e.getMessage().getContent().equalsIgnoreCase("=mottovoice"))
 			{
-
 				AudioManager manager = jda.getGuilds().get(0).getAudioManager();
 				e.getChannel().sendMessage("J'arrive dans la taverne");
 				manager.openAudioConnection(e.getAuthor().getJDA().getVoiceChannelByName("Taverne", true).get(0));
 
 			}
 
-			// Fonction qui ne sert a rien
+			// Fonction qui ne sert Ã  rien
 			if (e.getMessage().getContent().equalsIgnoreCase("=mottoleave"))
 			{
 				e.getChannel().sendMessage("byebye!");
@@ -296,8 +309,7 @@ public class Main implements EventListener, ConnectionListener
 	@Override
 	public void onPing(long arg0)
 	{
-		System.out.println("allo");
-
+		
 	}
 
 	@Override
@@ -309,7 +321,6 @@ public class Main implements EventListener, ConnectionListener
 	@Override
 	public void onUserSpeaking(User arg0, boolean arg1)
 	{
-		System.out.println("motto");
-
+		
 	}
 }

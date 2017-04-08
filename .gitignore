@@ -48,8 +48,7 @@ Temporary Items
 
 *.classpath
 /.settings/
-/bin/
+/bin/*
 .classpath
-*.class
 bin/main/Main.class
 .settings/org.eclipse.jdt.core.prefs
