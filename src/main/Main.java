@@ -127,9 +127,13 @@ public class Main implements EventListener, ConnectionListener
 		{
 			MessageReceivedEvent e = (MessageReceivedEvent) event;
 			
-			if (e.getMessage().getAuthor().getName().equals("Motto bot"))
+			if (e.getMessage().getAuthor().equals(this.jda.getSelfUser()))
 			{
 				this.msgTab.add(e.getMessage());
+				return;
+			}
+			if (e.getMessage().getAuthor().isBot())
+			{
 				return;
 			}
 			
