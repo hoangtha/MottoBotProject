@@ -47,5 +47,5 @@ Temporary Items
 .apdisk
 
 .classpath
-.bin
-.settings
+.bin/
+.settings/
