@@ -44,9 +44,6 @@ public class CmdClear implements Commande {
 		if (nbMessageInitial > 1)
 		{
 			e.getChannel().sendMessage(nbMessageInitial + " messages effacés.").queue();
-		} else
-		{
-			e.getChannel().sendMessage("Pas de messages à effacer...").queue();
 		}
 		return true;
 	}
