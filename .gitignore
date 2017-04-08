@@ -1,4 +1,4 @@
-﻿# Windows image file caches
+# Windows image file caches
 Thumbs.db
 ehthumbs.db
 
@@ -52,4 +52,6 @@ Temporary Items
 .classpath
 bin/main/Main.class
 .settings/org.eclipse.jdt.core.prefs
+.classpath
 *.class
+*.classpath
