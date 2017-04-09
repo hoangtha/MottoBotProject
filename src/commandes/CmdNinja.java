@@ -26,8 +26,8 @@ public class CmdNinja implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		OffsetDateTime oldest = e.getMessage().getCreationTime();
-		OffsetDateTime threeDaysAgo = OffsetDateTime.now();
-		threeDaysAgo = threeDaysAgo.minusDays(3);
+		OffsetDateTime twoDaysAgo = OffsetDateTime.now();
+		twoDaysAgo = twoDaysAgo.minusDays(2);
 		e.getMessage().delete().queue();
 		SelfUser me = bot.getJda().getSelfUser();
 		MessageHistory mh = e.getChannel().getHistory();
@@ -35,7 +35,7 @@ public class CmdNinja implements Commande {
 		List<Message> past;
 		
 		past = mh.retrievePast(50).complete();
-		while((past!=null && past.isEmpty()==false) || oldest.isBefore(threeDaysAgo)) {
+		while((past!=null && past.isEmpty()==false) || oldest.isBefore(twoDaysAgo)) {
 			mbot.clear();
 			
 			for(Message m:mh.getRetrievedHistory()) {
