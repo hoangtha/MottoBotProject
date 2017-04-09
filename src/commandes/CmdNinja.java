@@ -1,5 +1,6 @@
 package commandes;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class CmdNinja implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
+		OffsetDateTime oldest = e.getMessage().getCreationTime();
 		e.getMessage().delete().queue();
 		SelfUser me = bot.getJda().getSelfUser();
 		MessageHistory mh = e.getChannel().getHistory();
@@ -34,20 +36,21 @@ public class CmdNinja implements Commande {
 			mbot.clear();
 			
 			for(Message m:mh.getRetrievedHistory()) {
-				if(m.getAuthor().equals(me)) {
+				if(m.getAuthor().equals(me) && m.getCreationTime().isBefore(oldest)) {
 					mbot.add(m.getId());
+					oldest = m.getCreationTime();
 				}
 			}
 			if(mbot.size()>=2) {
 				e.getTextChannel().deleteMessagesByIds(mbot).queue();
-				System.out.println("J'ai supprimé "+mbot.size()+" messages.");
+				System.out.println("J'ai supprimÃ© " + mbot.size() + " messages.");
 			}
 			else if(mbot.size()==1) {
 				e.getTextChannel().deleteMessageById(mbot.get(0)).queue();
-				System.out.println("J'ai supprimé 1 message.");
+				System.out.println("J'ai supprimÃ© 1 message.");
 			}
 			else {
-				System.out.println("Je n'ai rien supprimé.");
+				System.out.println("Je n'ai rien supprimÃ©.");
 			}
 			
 			past = mh.retrievePast(50).complete();

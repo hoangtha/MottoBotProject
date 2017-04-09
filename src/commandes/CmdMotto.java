@@ -1,6 +1,7 @@
 package commandes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,6 +13,13 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdMotto implements Commande {
 	private static Random rand = new Random();
+	
+	private ArrayList<String> nsfwGuilds;
+	
+	public CmdMotto() {
+		this.nsfwGuilds = new ArrayList<String>();
+		this.nsfwGuilds.add("269163044427268096"); // Freaking Potatoes
+	}
 	
 	@Override
 	public String getName() {
@@ -29,7 +37,7 @@ public class CmdMotto implements Commande {
 
 		e.getChannel().sendTyping();
 		
-		boolean safe = !e.getGuild().getName().equals("Freaking Potatoes");
+		boolean nsfwGuild = this.nsfwGuilds.contains(e.getGuild().getId());
 		
 		int selector = CmdMotto.rand.nextInt(3);
 		String url = "";
@@ -41,46 +49,49 @@ public class CmdMotto implements Commande {
 		{
 			switch(selector)
 			{
-				case 0:
-					if (!arguments.equals("") && !safe)
-					{
-						url = "https://yande.re/post?tags=order:random+" + arguments;
-					} else if (!safe)
-					{
-						url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+				case 0: // Yande.re
+					if(nsfwGuild) {
+						if (arguments!=null && !arguments.isEmpty()) {
+							url = "https://yande.re/post?tags=order:random+" + arguments;
+						}
+						else {
+							url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+						}
 					}
-					else
-					{
-						url = "https://yande.re/post?tags=order:random+rating:safe+" + arguments;
-					}
-					break;
-
-				
-				case 1:
-					if (!arguments.equals("") && !safe)
-					{
-						url = "http://konachan.com/post?tags=order:random+" + arguments;
-					} else if (!safe)
-					{
-						url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
-					}
-					else
-					{
-						url = "http://konachan.net/post?tags=order:random+" + arguments;
+					else {
+						url = "https://yande.re/post?tags=order:random+rating:safe";
+						if (arguments!=null && !arguments.isEmpty())
+							url += "+" + arguments;
 					}
 					break;
-				case 2:
-					if (!arguments.equals("") && !safe)
-					{
-						url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments
-								+ "&commit=Search";
-					} else if (!safe)
-					{
-						url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH + "&commit=Search";
+				case 1: // Konachan
+					if(nsfwGuild) {
+						if (arguments!=null && !arguments.isEmpty()) {
+							url = "http://konachan.com/post?tags=order:random+" + arguments;
+						} 
+						else {
+							url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+						}
 					}
-					else
-					{
-						url = "https://yande.re/post?tags=order:random+rating:safe+" + arguments;
+					else {
+						url = "http://konachan.net/post?tags=order:random";
+						if (arguments!=null && !arguments.isEmpty())
+							url += "+" + arguments;
+					}
+					break;
+				case 2: // Sankaku(si nsfw) ou Yande.re
+					if(nsfwGuild) {
+						if (arguments!=null && !arguments.isEmpty()) {
+							url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments;
+						} 
+						else {
+							url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+						}
+					}
+					else {
+						url = "https://yande.re/post?tags=order:random+rating:safe";
+						if (arguments!=null && !arguments.isEmpty())
+							url += "+" + arguments;
 					}
 					break;
 				default:
@@ -96,7 +107,6 @@ public class CmdMotto implements Commande {
 							.orElse(null).substring(4);
 				} else
 				{
-
 					imageUrl = "https://chan.sankakucomplex.com"
 							+ doc.select("span[class=thumb blacklisted]").stream().findAny()
 									.map(docs -> docs.html()).orElse(null).substring(9, 27).replace("\"", "");
@@ -105,8 +115,8 @@ public class CmdMotto implements Commande {
 				doc = Jsoup.connect(imageUrl).get();
 				imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
 						.orElse(null);
-
-			} catch (IOException | NullPointerException e1)
+			} 
+			catch (IOException | NullPointerException err)
 			{
 				doc = null;
 				imageUrl = null;
@@ -117,21 +127,25 @@ public class CmdMotto implements Commande {
 				if (selector == 0)
 				{
 					e.getChannel().sendMessage(imageUrl).queue();
-				} else
+				} 
+				else
 				{
 					if (imageUrl.startsWith("//"))
 					{
 						e.getChannel().sendMessage("https:" + imageUrl).queue();
-					} else
+					} 
+					else
 					{
 						e.getChannel().sendMessage(imageUrl).queue();
 					}
 
 				}
-				System.out.println(e.getAuthor().getName() + " " +arguments +" : " + imageUrl);
+				System.out.println(e.getAuthor().getName() + " " + arguments +" : " + imageUrl);
 				break;
-			} else
+			} 
+			else
 			{
+				System.out.println("Erreur recherche sur " + selector);
 				selector = (selector + 1)%3;
 				nbRecherche++;
 			}
