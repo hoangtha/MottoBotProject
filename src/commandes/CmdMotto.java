@@ -7,7 +7,7 @@ import java.util.Random;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import main.Main;
+import main.MottoBot;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdMotto implements Commande {
@@ -20,12 +20,11 @@ public class CmdMotto implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
+	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 
 		e.getChannel().sendTyping();
@@ -46,7 +45,7 @@ public class CmdMotto implements Commande {
 						url = "https://yande.re/post?tags=order:random+" + arguments;
 					} else
 					{
-						url = "https://yande.re/post?tags=order:random+" + Main.DEFAULT_SEARCH;
+						url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
 					}
 					break;
 
@@ -57,7 +56,7 @@ public class CmdMotto implements Commande {
 						url = "http://konachan.com/post?tags=order:random+" + arguments;
 					} else
 					{
-						url = "http://konachan.com/post?tags=order:random+" + Main.DEFAULT_SEARCH;
+						url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
 					}
 					break;
 				case 2:
@@ -67,7 +66,7 @@ public class CmdMotto implements Commande {
 								+ "&commit=Search";
 					} else
 					{
-						url = "https://chan.sankakucomplex.com/?tags=order:random+" + Main.DEFAULT_SEARCH + "&commit=Search";
+						url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH + "&commit=Search";
 					}
 					break;
 				default:
@@ -128,7 +127,5 @@ public class CmdMotto implements Commande {
 				e.getChannel().sendMessage("ouin ouin, marche pas...").queue();
 			}
 		}
-		return true;
 	}
-
 }

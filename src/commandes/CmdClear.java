@@ -3,7 +3,7 @@ package commandes;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.Main;
+import main.MottoBot;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -16,12 +16,11 @@ public class CmdClear implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
+	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		
 		List<Message> temp = new ArrayList<Message>();
@@ -47,7 +46,6 @@ public class CmdClear implements Commande {
 		{
 			e.getChannel().sendMessage(nbMessageInitial + " messages effacés.").queue();
 		}
-		return true;
 	}
 
 }

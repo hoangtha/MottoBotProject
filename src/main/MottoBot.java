@@ -33,7 +33,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
 
-public class Main implements EventListener, ConnectionListener
+public class MottoBot implements EventListener, ConnectionListener
 {
 	// https://discordapp.com/oauth2/authorize?client_id=282539502818426892&scope=bot&permissions=-1
 
@@ -51,7 +51,7 @@ public class Main implements EventListener, ConnectionListener
 	
 	private AudioManagerMotto properAudioManager;
 
-	Main(String token)
+	public MottoBot(String token)
 	{	
 		this.msgTab = new ArrayList<Message>();
 		this.commandesValides = new ArrayList<Commande>();
@@ -76,17 +76,36 @@ public class Main implements EventListener, ConnectionListener
 		 
 		 this.properAudioManager = new AudioManagerMotto(); 
 	}
-	
-	
 
 	public static void main(String[] args)
 	{
-		Main m = new Main("MjgyNTM5NTAyODE4NDI2ODky.C4n-8g.3NGwGhWK8xeugEk2swSe57CxUPo");
+		MottoBot m = new MottoBot("MjgyNTM5NTAyODE4NDI2ODky.C4n-8g.3NGwGhWK8xeugEk2swSe57CxUPo");
 		m.registerCommands();
 		m.jda.addEventListener(m);
 		m.run();
 	}
-	
+    
+	private void run() {
+		boolean stop = false;
+		Scanner scanner = new Scanner(System.in);
+		while (!stop)
+		{
+			String cmd = scanner.next();
+			if (cmd.equalsIgnoreCase("stop"))
+			{
+				System.out.println("Arrêt demandé");
+				this.jda.shutdown(true);
+				stop = true;
+			}
+			else if (cmd.equalsIgnoreCase("regCmd"))
+			{
+				System.out.println("Recherche de commandes");
+				this.registerCommands();
+				System.out.println("Recherche terminée");
+			}
+		}
+		scanner.close();
+	}
 	
     private void registerCommands() {
     	final ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -120,31 +139,6 @@ public class Main implements EventListener, ConnectionListener
 			e.printStackTrace();
 		}
     }
-    
-   
-
-
-	private void run() {
-		boolean stop = false;
-		Scanner scanner = new Scanner(System.in);
-		while (!stop)
-		{
-			String cmd = scanner.next();
-			if (cmd.equalsIgnoreCase("stop"))
-			{
-				System.out.println("Arrêt demandé");
-				this.jda.shutdown(true);
-				stop = true;
-			}
-			else if (cmd.equalsIgnoreCase("regCmd"))
-			{
-				System.out.println("Recherche de commandes");
-				this.registerCommands();
-				System.out.println("Recherche terminée");
-			}
-		}
-		scanner.close();
-	}
 
 	@Override
 	public void onEvent(Event event)
@@ -178,36 +172,25 @@ public class Main implements EventListener, ConnectionListener
 	}
 
 	private void lireCommande(MessageReceivedEvent e, String cmdString, String arguments) {
-		boolean result = false;
-		
         Optional<Commande> commande = this.commandesValides.stream()
                 .filter(com -> com.getName().equalsIgnoreCase(cmdString) || (com.getAliases() != null && com.getAliases().contains(cmdString)))
                 .findAny();
         if (commande.isPresent()) {
         	// La commande existe
-            result = commande.get().run(this, e, arguments);
+            commande.get().run(this, e, arguments);
         } else {
         	// Commande inconnue
         }
 	}
 
 	@Override
-	public void onPing(long arg0)
-	{
-		
-	}
+	public void onPing(long arg0) {}
 
 	@Override
-	public void onStatusChange(ConnectionStatus arg0)
-	{
-
-	}
+	public void onStatusChange(ConnectionStatus arg0) {}
 
 	@Override
-	public void onUserSpeaking(User arg0, boolean arg1)
-	{
-		
-	}
+	public void onUserSpeaking(User arg0, boolean arg1) {}
 
 	public void addMsg(Message message) {
 		this.msgTab.add(message);
@@ -236,6 +219,4 @@ public class Main implements EventListener, ConnectionListener
 	public AudioManagerMotto getProperAudioManager() {
 		return this.properAudioManager;
 	}
-
-
 }

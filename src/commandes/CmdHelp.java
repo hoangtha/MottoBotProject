@@ -2,7 +2,7 @@ package commandes;
 
 import java.util.List;
 
-import main.Main;
+import main.MottoBot;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdHelp implements Commande {
@@ -14,12 +14,11 @@ public class CmdHelp implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
+	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		e.getChannel().sendTyping();
 		e.getChannel()
@@ -35,7 +34,6 @@ public class CmdHelp implements Commande {
 						+ "=mottofplay (url): Force le lancement de la musique\n\n\n"
 						+ "Liste des sources pour le player : YouTube, SoundCloud, Bandcamp, Vimeo, Twitch stream, HTTP URLs, (local)```")
 				.queue();
-		return true;
 	}
 
 }

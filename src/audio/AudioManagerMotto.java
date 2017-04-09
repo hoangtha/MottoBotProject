@@ -9,7 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import main.Main;
+import main.MottoBot;
 import manager.GuildMusicManager;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -24,7 +24,7 @@ public class AudioManagerMotto {
 		this.playlist = new ArrayList<String>();
 	}
 
-	public void loadAndPlay(final TextChannel channel, final String trackUrl, Main bot) {
+	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot) {
 
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 
@@ -62,7 +62,7 @@ public class AudioManagerMotto {
 		});
 	}
 	
-	private synchronized static GuildMusicManager getGuildAudioPlayer(Guild guild, Main bot) {
+	private synchronized static GuildMusicManager getGuildAudioPlayer(Guild guild, MottoBot bot) {
 		long guildId = Long.parseLong(guild.getId());
 		GuildMusicManager musicManager = bot.getMusicManagers().get(guildId);
 
@@ -83,7 +83,7 @@ public class AudioManagerMotto {
 		this.playlist.add(track.getInfo().title);
 	}
 
-	public void skipTrack(TextChannel channel, Main bot) {
+	public void skipTrack(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		musicManager.scheduler.nextTrack();
 		channel.sendMessage("Passer à la prochaine musique.").queue();
@@ -98,7 +98,7 @@ public class AudioManagerMotto {
 		}
 	}
 	
-	public void clearQueue(TextChannel channel, Main bot) {
+	public void clearQueue(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		this.playlist.clear();
 		for(int i = 0; i<100; i++)
