@@ -1,5 +1,6 @@
 package main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 
 import javax.security.auth.login.LoginException;
 
+import com.google.common.reflect.ClassPath;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -95,11 +97,11 @@ public class Main implements EventListener, ConnectionListener
 		m.run();
 	}
 	
-    private void registerCommands() {/*
+    private void registerCommands() {
     	final ClassLoader loader = Thread.currentThread().getContextClassLoader();
     	
     	try {
-			for (final ClassPath.ClassInfo info : ClassPath.from(loader).getAllClasses()) {
+			for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses("commandes")) {
 				
 				Class<?> clazz = info.load();
 				Class<?> interfaces[] = clazz.getInterfaces();
@@ -125,13 +127,7 @@ public class Main implements EventListener, ConnectionListener
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
-    	this.commandesValides.add(new CmdClear());
-    	this.commandesValides.add(new CmdMotto());
-    	this.commandesValides.add(new CmdLeave());
-    	this.commandesValides.add(new CmdPing());
-    	this.commandesValides.add(new CmdHelp());
-    	this.commandesValides.add(new CmdVoice());
+		}
     }
     
     private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
