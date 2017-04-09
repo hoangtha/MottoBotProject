@@ -85,28 +85,6 @@ public class MottoBot implements EventListener, ConnectionListener
 		m.run();
 	}
     
-	private void run() {
-		boolean stop = false;
-		Scanner scanner = new Scanner(System.in);
-		while (!stop)
-		{
-			String cmd = scanner.next();
-			if (cmd.equalsIgnoreCase("stop"))
-			{
-				System.out.println("Arrêt demandé");
-				this.jda.shutdown(true);
-				stop = true;
-			}
-			else if (cmd.equalsIgnoreCase("regCmd"))
-			{
-				System.out.println("Recherche de commandes");
-				this.registerCommands();
-				System.out.println("Recherche terminée");
-			}
-		}
-		scanner.close();
-	}
-	
     private void registerCommands() {
     	final ClassLoader loader = Thread.currentThread().getContextClassLoader();
     	
@@ -139,6 +117,28 @@ public class MottoBot implements EventListener, ConnectionListener
 			e.printStackTrace();
 		}
     }
+	
+	private void run() {
+		boolean stop = false;
+		Scanner scanner = new Scanner(System.in);
+		while (!stop)
+		{
+			String cmd = scanner.next();
+			if (cmd.equalsIgnoreCase("stop"))
+			{
+				System.out.println("Arrêt demandé");
+				this.jda.shutdown(true);
+				stop = true;
+			}
+			else if (cmd.equalsIgnoreCase("regCmd"))
+			{
+				System.out.println("Recherche de commandes");
+				this.registerCommands();
+				System.out.println("Recherche terminée");
+			}
+		}
+		scanner.close();
+	}
 
 	@Override
 	public void onEvent(Event event)
