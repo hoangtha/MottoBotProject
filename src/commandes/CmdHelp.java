@@ -24,12 +24,14 @@ public class CmdHelp implements Commande {
 		e.getChannel().sendTyping();
 		e.getChannel()
 				.sendMessage(
-						"```=motto [tag]: Affiche un lien vers l'image voulue\n"
-						+ "=mottoclear : Nettoie un peu\n"
-						+ "=mottohelp Affiche les commandes disponible\n"
+						"```Liste des commandes :\n"
+						+ "=motto [tag]:     Affiche un lien vers l'image voulue\n"
+						+ "=mottoclear :      Nettoie un peu\n"
+						+ "=mottohelp :       Affiche les commandes disponible\n\n"
+						+ "PLAYER : \n"
 						+ "=mottoplay (url) : Rejoint le channel vocal Taverne et lance la musique si possible\n"
-						+ "=mottoleave : Quitte le channel vocal et vide la playlist\n"
-						+ "=mottoskip : Passe à la prochaine musique dans la playlist\n"
+						+ "=mottoleave :      Quitte le channel vocal et vide la playlist\n"
+						+ "=mottoskip :       Passe à la prochaine musique dans la playlist\n"
 						+ "=mottofplay (url): Force le lancement de la musique\n\n\n"
 						+ "Liste des sources pour le player : YouTube, SoundCloud, Bandcamp, Vimeo, Twitch stream, HTTP URLs, (local)```")
 				.queue();
