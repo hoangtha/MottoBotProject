@@ -1,5 +1,6 @@
 package commandes;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class CmdNinja implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		OffsetDateTime oldest = e.getMessage().getCreationTime();
+		OffsetDateTime threeDaysAgo = OffsetDateTime.now();
+		threeDaysAgo = threeDaysAgo.minusDays(3);
 		e.getMessage().delete().queue();
 		SelfUser me = bot.getJda().getSelfUser();
 		MessageHistory mh = e.getChannel().getHistory();
@@ -32,7 +35,7 @@ public class CmdNinja implements Commande {
 		List<Message> past;
 		
 		past = mh.retrievePast(50).complete();
-		while(past!=null && past.isEmpty()==false) {
+		while((past!=null && past.isEmpty()==false) || oldest.isBefore(threeDaysAgo)) {
 			mbot.clear();
 			
 			for(Message m:mh.getRetrievedHistory()) {
