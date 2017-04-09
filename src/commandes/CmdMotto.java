@@ -29,6 +29,8 @@ public class CmdMotto implements Commande {
 
 		e.getChannel().sendTyping();
 		
+		boolean safe = !e.getGuild().getName().equals("Freaking Potatoes");
+		
 		int selector = CmdMotto.rand.nextInt(3);
 		String url = "";
 		int nbRecherche = 0;
@@ -40,33 +42,45 @@ public class CmdMotto implements Commande {
 			switch(selector)
 			{
 				case 0:
-					if (!arguments.equals(""))
+					if (!arguments.equals("") && !safe)
 					{
 						url = "https://yande.re/post?tags=order:random+" + arguments;
-					} else
+					} else if (!safe)
 					{
 						url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+					}
+					else
+					{
+						url = "https://yande.re/post?tags=order:random+rating:safe+" + arguments;
 					}
 					break;
 
 				
 				case 1:
-					if (!arguments.equals(""))
+					if (!arguments.equals("") && !safe)
 					{
 						url = "http://konachan.com/post?tags=order:random+" + arguments;
-					} else
+					} else if (!safe)
 					{
 						url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
 					}
+					else
+					{
+						url = "http://konachan.net/post?tags=order:random+" + arguments;
+					}
 					break;
 				case 2:
-					if (!arguments.equals(""))
+					if (!arguments.equals("") && !safe)
 					{
 						url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments
 								+ "&commit=Search";
-					} else
+					} else if (!safe)
 					{
 						url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH + "&commit=Search";
+					}
+					else
+					{
+						url = "https://yande.re/post?tags=order:random+rating:safe+" + arguments;
 					}
 					break;
 				default:

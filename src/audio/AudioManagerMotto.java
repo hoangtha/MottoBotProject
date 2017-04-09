@@ -17,8 +17,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 public class AudioManagerMotto {
 	
-	
-
 	public AudioManagerMotto() {
 		
 	}
@@ -122,15 +120,18 @@ public class AudioManagerMotto {
 			{
 				playlistText = playlistText + "\n";
 			}
-			for(int i = index-1 ; i<playlist.size();i++)
+			if(playlist.size() !=0)
 			{
-				if((playlistText+(i+1) + ". " + playlist.get(i) + "\n").length() >1996)
+				for(int i = index-1 ; i<playlist.size();i++)
 				{
-					playlistText = playlistText + "...";
-					break;
+					if((playlistText+(i+1) + ". " + playlist.get(i+1) + "\n").length() >1996)
+					{
+						playlistText = playlistText + "...";
+						break;
+					}
+					playlistText = playlistText + (i+1) + ". " + playlist.get(i) + "\n";
+					
 				}
-				playlistText = playlistText + (i+1) + ". " + playlist.get(i) + "\n";
-				
 			}
 			playlistText = playlistText + "```";
 		}

@@ -31,7 +31,7 @@ public class CmdHelp implements Commande {
 		mb.append("=mottohelp :       Affiche les commandes disponible\n");
 		mb.append("\nPlayer :\n");
 		mb.append("=mottoplay (url) : Rejoint le channel vocal Taverne et lance la musique si possible\n");
-		mb.append("=mottoplaylist :   Affiche les premier éléments de la playlist\n");
+		mb.append("=mottoplaylist :   Affiche les premiers éléments de la playlist\n");
 		mb.append("=mottoleave :      Quitte le channel vocal et vide la playlist\n");
 		mb.append("=mottoskip :       Passe à la prochaine musique dans la playlist\n");
 		mb.append("=mottofplay (url): Force le lancement de la musique\n");
