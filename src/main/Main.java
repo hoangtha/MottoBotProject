@@ -1,6 +1,5 @@
 package main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +9,12 @@ import java.util.regex.Pattern;
 
 import javax.security.auth.login.LoginException;
 
-import com.google.common.reflect.ClassPath;
-
+import commandes.CmdClear;
+import commandes.CmdHelp;
+import commandes.CmdLeave;
+import commandes.CmdMotto;
+import commandes.CmdPing;
+import commandes.CmdVoice;
 import commandes.Commande;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -65,11 +68,11 @@ public class Main implements EventListener, ConnectionListener
 		m.run();
 	}
 	
-    private void registerCommands() {
+    private void registerCommands() {/*
     	final ClassLoader loader = Thread.currentThread().getContextClassLoader();
     	
     	try {
-			for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses("commandes")) {
+			for (final ClassPath.ClassInfo info : ClassPath.from(loader).getAllClasses()) {
 				
 				Class<?> clazz = info.load();
 				Class<?> interfaces[] = clazz.getInterfaces();
@@ -95,7 +98,13 @@ public class Main implements EventListener, ConnectionListener
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
+    	this.commandesValides.add(new CmdClear());
+    	this.commandesValides.add(new CmdMotto());
+    	this.commandesValides.add(new CmdLeave());
+    	this.commandesValides.add(new CmdPing());
+    	this.commandesValides.add(new CmdHelp());
+    	this.commandesValides.add(new CmdVoice());
     }
 
 	private void run() {

@@ -30,7 +30,7 @@ public class CmdClear implements Commande {
 			Message messageToDelete = bot.getMsgTab().get(bot.getMsgTab().size() - 1);
 			if(messageToDelete.getChannel().equals(e.getMessage().getChannel()))
 			{
-				messageToDelete.deleteMessage().queue();
+				messageToDelete.delete().queue();
 				nbMessageInitial++;
 			}
 			else
