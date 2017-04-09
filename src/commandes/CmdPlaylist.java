@@ -5,11 +5,11 @@ import java.util.List;
 import main.Main;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class CmdLeave implements Commande {
+public class CmdPlaylist implements Commande {
 
 	@Override
 	public String getName() {
-		return "mottoleave";
+		return "mottoplaylist";
 	}
 
 	@Override
@@ -21,12 +21,11 @@ public class CmdLeave implements Commande {
 	@Override
 	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
-		
-		e.getChannel().sendMessage("byebye!").queue();
-		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		bot.getJda().getGuilds().get(0).getAudioManager().closeAudioConnection();
-
+		// TODO: Afficher la playlist.
+		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot);
 		return true;
 	}
+	
+	
 
 }

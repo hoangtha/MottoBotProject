@@ -20,9 +20,12 @@ public class CmdPlay implements Commande {
 
 	@Override
 	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
-	
-		bot.loadAndPlay(e.getTextChannel(), arguments);
+		bot.addMsg(e.getMessage());
+		
+		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot);
 		return true;
 	}
+	
+	
 
 }

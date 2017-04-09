@@ -70,6 +70,8 @@ public class CmdMotto implements Commande {
 						url = "https://chan.sankakucomplex.com/?tags=order:random+" + Main.DEFAULT_SEARCH + "&commit=Search";
 					}
 					break;
+				default:
+					break;
 			}
 			
 			try

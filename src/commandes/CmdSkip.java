@@ -5,11 +5,11 @@ import java.util.List;
 import main.Main;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class CmdLeave implements Commande {
+public class CmdSkip implements Commande {
 
 	@Override
 	public String getName() {
-		return "mottoleave";
+		return "mottoskip";
 	}
 
 	@Override
@@ -22,10 +22,7 @@ public class CmdLeave implements Commande {
 	public boolean run(Main bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		
-		e.getChannel().sendMessage("byebye!").queue();
-		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		bot.getJda().getGuilds().get(0).getAudioManager().closeAudioConnection();
-
+		bot.getProperAudioManager().skipTrack(e.getTextChannel(), bot);
 		return true;
 	}
 
