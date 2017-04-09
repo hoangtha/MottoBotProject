@@ -1,6 +1,5 @@
 package audio;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -18,10 +17,10 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 public class AudioManagerMotto {
 	
-	List<String> playlist;
+	
 
 	public AudioManagerMotto() {
-		this.playlist = new ArrayList<String>();
+		
 	}
 
 	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot) {
@@ -32,7 +31,7 @@ public class AudioManagerMotto {
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				channel.sendMessage("Ajouter à la playlist " + track.getInfo().title).queue();
+				channel.sendMessage(":musical_note: Ajoutée à la playlist : " + track.getInfo().title).queue();
 				play(channel.getGuild(), musicManager, track);
 			}
 
@@ -44,20 +43,20 @@ public class AudioManagerMotto {
 					firstTrack = playlist.getTracks().get(0);
 				}
 
-				channel.sendMessage("Ajouter à la playlist " + firstTrack.getInfo().title + " (premier titre de la musique "
+				channel.sendMessage(":musical_note: Ajoutée à la playlist : " + firstTrack.getInfo().title + " (Titre de la playlist  : "
 						+ playlist.getName() + ")").queue();
 
-				play(channel.getGuild(), musicManager, firstTrack);
+				playList(channel.getGuild(), musicManager, playlist);
 			}
 
 			@Override
 			public void noMatches() {
-				channel.sendMessage("Rien trouvé avec " + trackUrl).queue();
+				channel.sendMessage(":musical_note: Rien trouvé avec " + trackUrl).queue();
 			}
 
 			@Override
 			public void loadFailed(FriendlyException exception) {
-				channel.sendMessage("Je ne peut pas jouer : " + exception.getMessage()).queue();
+				channel.sendMessage(":musical_note: Je ne peux pas jouer : " + exception.getMessage()).queue();
 			}
 		});
 	}
@@ -80,13 +79,21 @@ public class AudioManagerMotto {
 		connectToFirstVoiceChannel(guild.getAudioManager());
 
 		musicManager.scheduler.queue(track);
-		this.playlist.add(track.getInfo().title);
+	}
+	
+	public void playList(Guild guild, GuildMusicManager musicManager, AudioPlaylist playlist) {
+		connectToFirstVoiceChannel(guild.getAudioManager());
+
+		musicManager.scheduler.queuePlayList(playlist);
 	}
 
-	public void skipTrack(TextChannel channel, MottoBot bot) {
+	public void skipTrack(TextChannel channel, MottoBot bot, int nbOfSkips) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
-		musicManager.scheduler.nextTrack();
-		channel.sendMessage("Passer à la prochaine musique.").queue();
+		for(int i = 0; i<nbOfSkips; i++)
+		{
+			musicManager.scheduler.nextTrack();
+		}
+		channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
 	}
 
 	public static void connectToFirstVoiceChannel(AudioManager audioManager) {
@@ -100,11 +107,38 @@ public class AudioManagerMotto {
 	
 	public void clearQueue(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
-		this.playlist.clear();
-		for(int i = 0; i<100; i++)
+		for(int i = 0; i<musicManager.scheduler.getPlaylist().size(); i++)
 			musicManager.scheduler.nextTrack();
 	}
-
 	
+	public String showPlaylist(TextChannel channel, MottoBot bot, int index) {
+		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
+		String playlistText = "";
+		if(musicManager.player.getPlayingTrack() != null)
+		{
+			List<String> playlist = musicManager.scheduler.getPlaylist();
+			playlistText = "```Playlist :\n0. "+musicManager.player.getPlayingTrack().getInfo().title+"\n";
+			if(index>0)
+			{
+				playlistText = playlistText + "\n";
+			}
+			for(int i = index-1 ; i<playlist.size();i++)
+			{
+				if((playlistText+(i+1) + ". " + playlist.get(i) + "\n").length() >1996)
+				{
+					playlistText = playlistText + "...";
+					break;
+				}
+				playlistText = playlistText + (i+1) + ". " + playlist.get(i) + "\n";
+				
+			}
+			playlistText = playlistText + "```";
+		}
+		else
+		{
+			playlistText = "```No playlist```";
+		}
+		return playlistText;
+	}
 
 }

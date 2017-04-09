@@ -20,7 +20,7 @@ public class CmdSkip implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
-		
-		bot.getProperAudioManager().skipTrack(e.getTextChannel(), bot);
+		int nbOfSkips = arguments.equals("") ? 1 : Integer.parseInt(arguments) ;
+		bot.getProperAudioManager().skipTrack(e.getTextChannel(), bot, nbOfSkips);
 	}
 }

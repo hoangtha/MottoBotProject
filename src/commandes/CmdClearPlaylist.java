@@ -22,7 +22,7 @@ public class CmdClearPlaylist implements Commande {
 		bot.addMsg(e.getMessage());
 		
 		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		e.getChannel().sendMessage("Playlist clean ! :ok_hand:").queue();
+		e.getChannel().sendMessage(":musical_note: Playlist clean ! :ok_hand:").queue();
 	}
 
 }

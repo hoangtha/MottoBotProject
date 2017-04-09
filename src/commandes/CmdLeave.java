@@ -23,6 +23,6 @@ public class CmdLeave implements Commande {
 		
 		e.getChannel().sendMessage("byebye!").queue();
 		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		bot.getJda().getGuilds().get(0).getAudioManager().closeAudioConnection();
+		e.getGuild().getAudioManager().closeAudioConnection();
 	}
 }
