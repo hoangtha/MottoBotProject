@@ -1,6 +1,5 @@
 package main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,8 @@ import java.util.regex.Pattern;
 
 import javax.security.auth.login.LoginException;
 
-import com.google.common.reflect.ClassPath;
+import org.reflections.Reflections;
+
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -86,36 +86,24 @@ public class MottoBot implements EventListener, ConnectionListener
 	}
     
     private void registerCommands() {
-    	final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    	
-    	try {
-			for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses("commandes")) {
-				
-				Class<?> clazz = info.load();
-				Class<?> interfaces[] = clazz.getInterfaces();
-				for(Class<?> c:interfaces) {
-					if(c.equals(Commande.class))
-					{
-						try {
-							Commande nouvelleCommande = (Commande) clazz.newInstance();
-							Optional<Commande> commandeExistante = this.commandesValides.stream().filter(cmd -> cmd.getName().equalsIgnoreCase(nouvelleCommande.getName())).findAny();
-			                if (!commandeExistante.isPresent()) {
-			                    this.commandesValides.add(nouvelleCommande);
-			                    System.out.println("Commande enregistrée: "+ nouvelleCommande.getName());
-			                } else {
-			                	System.out.println("Enregistrement de deux commandes portant le même nom: " + commandeExistante.get().getName());
-			                	System.out.println("Existante: " + commandeExistante.get().getClass().getName());
-			                	System.out.println("Nouvelle: " + nouvelleCommande.getClass().getName());
-			                }
-						} catch (InstantiationException | IllegalAccessException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    	new Reflections("commandes").getSubTypesOf(Commande.class).forEach(clazz -> {
+            try {
+                Commande nouvelleCommande = clazz.newInstance();
+                Optional<Commande> commandeExistante = this.commandesValides.stream().filter(cmd -> cmd.getName().equalsIgnoreCase(clazz.getName())).findAny();
+                if (!commandeExistante.isPresent()) {
+                	this.commandesValides.add(nouvelleCommande);
+                    System.out.println("Commande enregistrée: "+ nouvelleCommande.getName());
+                } else {
+                	System.out.println("Enregistrement de deux commandes portant le même nom: " + commandeExistante.get().getName());
+                	System.out.println("Existante: " + commandeExistante.get().getClass().getName());
+                	System.out.println("Nouvelle: " + nouvelleCommande.getClass().getName());
+                }
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
     }
 	
 	private void run() {
