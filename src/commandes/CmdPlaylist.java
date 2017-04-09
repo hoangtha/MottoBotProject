@@ -20,7 +20,7 @@ public class CmdPlaylist implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
-		int index = arguments.equals("") ? 0 : Integer.parseInt(arguments);
+		int index = arguments.equals("") ? 1 : Integer.parseInt(arguments);
 		e.getChannel().sendMessage(bot.getProperAudioManager().showPlaylist(e.getTextChannel(), bot, index)).queue();
 	}
 }

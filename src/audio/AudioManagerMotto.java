@@ -124,7 +124,7 @@ public class AudioManagerMotto {
 			{
 				for(int i = index-1 ; i<playlist.size();i++)
 				{
-					if((playlistText+(i+1) + ". " + playlist.get(i+1) + "\n").length() >1996)
+					if((playlistText+(i+1) + ". " + playlist.get(i) + "\n").length() >1996)
 					{
 						playlistText = playlistText + "...";
 						break;
