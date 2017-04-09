@@ -21,7 +21,7 @@ public class AudioManagerMotto {
 		
 	}
 
-	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot) {
+	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot, VoiceChannel vChannel) {
 
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 
@@ -30,7 +30,7 @@ public class AudioManagerMotto {
 			@Override
 			public void trackLoaded(AudioTrack track) {
 				channel.sendMessage(":musical_note: Ajoutée à la playlist : " + track.getInfo().title).queue();
-				play(channel.getGuild(), musicManager, track);
+				play(channel.getGuild(), musicManager, track, vChannel);
 			}
 
 			@Override
@@ -44,7 +44,7 @@ public class AudioManagerMotto {
 				channel.sendMessage(":musical_note: Ajoutée à la playlist : " + firstTrack.getInfo().title + " (Titre de la playlist  : "
 						+ playlist.getName() + ")").queue();
 
-				playList(channel.getGuild(), musicManager, playlist);
+				playList(channel.getGuild(), musicManager, playlist, vChannel);
 			}
 
 			@Override
@@ -73,14 +73,14 @@ public class AudioManagerMotto {
 		return musicManager;
 	}
 
-	public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
-		connectToFirstVoiceChannel(guild.getAudioManager());
+	public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track, VoiceChannel vChannel) {
+		connectToVoiceChannel(guild.getAudioManager(), vChannel);
 
 		musicManager.scheduler.queue(track);
 	}
 	
-	public void playList(Guild guild, GuildMusicManager musicManager, AudioPlaylist playlist) {
-		connectToFirstVoiceChannel(guild.getAudioManager());
+	public void playList(Guild guild, GuildMusicManager musicManager, AudioPlaylist playlist, VoiceChannel vChannel) {
+		connectToVoiceChannel(guild.getAudioManager() , vChannel);
 
 		musicManager.scheduler.queuePlayList(playlist);
 	}
@@ -94,13 +94,9 @@ public class AudioManagerMotto {
 		channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
 	}
 
-	public static void connectToFirstVoiceChannel(AudioManager audioManager) {
-		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
-			for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-				audioManager.openAudioConnection(voiceChannel);
-				break;
-			}
-		}
+	public static void connectToVoiceChannel(AudioManager audioManager, VoiceChannel vChannel) {
+		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) 	
+			audioManager.openAudioConnection(vChannel);
 	}
 	
 	public void clearQueue(TextChannel channel, MottoBot bot) {

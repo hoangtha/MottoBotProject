@@ -22,6 +22,6 @@ public class CmdForcePlay implements Commande {
 		bot.addMsg(e.getMessage());
 		
 		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot);
+		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot, e.getMember().getVoiceState().getChannel());
 	}
 }

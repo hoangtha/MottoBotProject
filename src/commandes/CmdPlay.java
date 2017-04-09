@@ -21,6 +21,6 @@ public class CmdPlay implements Commande {
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		
-		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot);
+		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot, e.getMember().getVoiceState().getChannel());
 	}
 }
