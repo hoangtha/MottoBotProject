@@ -25,8 +25,10 @@ public class CmdNinja implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		OffsetDateTime oldest = e.getMessage().getCreationTime();
+		System.out.println(oldest);
 		OffsetDateTime twoDaysAgo = OffsetDateTime.now();
 		twoDaysAgo = twoDaysAgo.minusDays(2);
+		System.out.println(twoDaysAgo);
 		e.getMessage().delete().queue();
 		SelfUser me = bot.getJda().getSelfUser();
 		MessageHistory mh = e.getChannel().getHistory();
@@ -34,13 +36,17 @@ public class CmdNinja implements Commande {
 		List<Message> past;
 		
 		past = mh.retrievePast(50).complete();
-		while((past!=null && past.isEmpty()==false) || oldest.isBefore(twoDaysAgo)) {
+		while((past!=null && past.isEmpty()==false) && oldest.compareTo(twoDaysAgo)>0) {
 			mbot.clear();
 			
-			for(Message m:mh.getRetrievedHistory()) {
-				if(m.getAuthor().equals(me) && m.getCreationTime().isBefore(oldest)) {
-					mbot.add(m.getId());
-					oldest = m.getCreationTime();
+			List<Message> l = mh.getRetrievedHistory();
+			for(Message m:l) {
+				if(m.getCreationTime().isAfter(twoDaysAgo) && m.getCreationTime().isBefore(oldest)) {
+					if(m.getAuthor().getName()==me.getName() || m.getContent().startsWith("=motto")) {
+						mbot.add(m.getId());
+						oldest = m.getCreationTime();
+						System.out.println(oldest);
+					}
 				}
 			}
 			if(mbot.size()>=2) {
@@ -54,7 +60,9 @@ public class CmdNinja implements Commande {
 			else {
 				System.out.println("Je n'ai rien supprimé.");
 			}
-			
+			if(l.size()>1) {
+				oldest = l.get(l.size()-1).getCreationTime();
+			}
 			past = mh.retrievePast(50).complete();
 		}
 	}
