@@ -22,18 +22,14 @@ import manager.GuildMusicManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
-import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-public class MottoBot implements EventListener, ConnectionListener
+public class MottoBot extends ListenerAdapter
 {
 	// https://discordapp.com/oauth2/authorize?client_id=282539502818426892&scope=bot&permissions=-1
 
@@ -50,15 +46,16 @@ public class MottoBot implements EventListener, ConnectionListener
 	private final Map<Long, GuildMusicManager> musicManagers;
 	
 	private AudioManagerMotto properAudioManager;
+	
+	private TallyCounter tallyCounter;
 
 	public MottoBot(String token)
-	{	
+	{
 		this.msgTab = new ArrayList<Message>();
 		this.commandesValides = new ArrayList<Commande>();
 		
 		try {
 			this.jda = new JDABuilder(AccountType.BOT).setToken(token).setBulkDeleteSplittingEnabled(false).buildBlocking();
-			// aws = new AudioWebSocket()
 		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
 			e.printStackTrace();
 		}
@@ -68,24 +65,30 @@ public class MottoBot implements EventListener, ConnectionListener
 		System.out.println("Le bot est autorisé sur " + nbServeurs + " serveur" + (nbServeurs > 1 ? "s" : ""));
 		this.jda.getPresence().setGame(Game.of("=motto"));
 		
-		 this.musicManagers = new HashMap<>();
+		this.musicManagers = new HashMap<>();
+		this.tallyCounter = new TallyCounter();
+		
 
-		 this.playerManager = new DefaultAudioPlayerManager();
-		 AudioSourceManagers.registerRemoteSources(this.playerManager);
-		 AudioSourceManagers.registerLocalSource(this.playerManager);
-		 
-		 this.properAudioManager = new AudioManagerMotto(); 
+		this.playerManager = new DefaultAudioPlayerManager();
+		AudioSourceManagers.registerRemoteSources(this.playerManager);
+		AudioSourceManagers.registerLocalSource(this.playerManager); 
+		this.properAudioManager = new AudioManagerMotto(); 
 	}
 
 	public static void main(String[] args)
 	{
-		MottoBot m = new MottoBot("MjgyNTM5NTAyODE4NDI2ODky.C4n-8g.3NGwGhWK8xeugEk2swSe57CxUPo");
+		if(args.length<1) {
+			System.out.println("Il faut un token pour lancer le bot !");
+			System.exit(1);
+		}
+		MottoBot m = new MottoBot(args[0]);
 		m.registerCommands();
 		m.jda.addEventListener(m);
+		m.jda.addEventListener(m.getTallyCounter());
 		m.run();
 	}
-    
-    private void registerCommands() {
+
+	private void registerCommands() {
     	new Reflections("commandes").getSubTypesOf(Commande.class).forEach(clazz -> {
             try {
                 Commande nouvelleCommande = clazz.newInstance();
@@ -129,36 +132,30 @@ public class MottoBot implements EventListener, ConnectionListener
 	}
 
 	@Override
-	public void onEvent(Event event)
-	{
-		if (event instanceof MessageReceivedEvent)
+	public void onMessageReceived(MessageReceivedEvent event) {
+		if (event.getMessage().getAuthor().equals(this.jda.getSelfUser()))
 		{
-			MessageReceivedEvent e = (MessageReceivedEvent) event;
-			
-			if (e.getMessage().getAuthor().equals(this.jda.getSelfUser()))
-			{
-				this.msgTab.add(e.getMessage());
-				return;
-			}
-			if (e.getMessage().getAuthor().isBot())
-			{
-				return;
-			}
-			
-			Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
-			Matcher matcher = commandPattern.matcher(e.getMessage().getContent());
-	        if (matcher.matches()) {
-	        	// Potentielle commande
-	        	String commande = matcher.group(1).toLowerCase();
-	        	String arguments = matcher.group(2).isEmpty() ? "" : matcher.group(2);
-	        	this.lireCommande(e, commande, arguments);
-	        }
-			else {
-				// Message lambda
-			}
+			this.msgTab.add(event.getMessage());
+			return;
+		}
+		else if (event.getMessage().getAuthor().isBot())
+		{
+			return;
+		}
+		
+		Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
+		Matcher matcher = commandPattern.matcher(event.getMessage().getContent());
+        if (matcher.matches()) {
+        	// Potentielle commande
+        	String commande = matcher.group(1).toLowerCase();
+        	String arguments = matcher.group(2).isEmpty() ? "" : matcher.group(2);
+        	this.lireCommande(event, commande, arguments);
+        }
+		else {
+			// Message lambda
 		}
 	}
-
+	
 	private void lireCommande(MessageReceivedEvent e, String cmdString, String arguments) {
         Optional<Commande> commande = this.commandesValides.stream()
                 .filter(com -> com.getName().equalsIgnoreCase(cmdString) || (com.getAliases() != null && com.getAliases().contains(cmdString)))
@@ -171,21 +168,16 @@ public class MottoBot implements EventListener, ConnectionListener
         }
 	}
 
-	@Override
-	public void onPing(long arg0) {}
-
-	@Override
-	public void onStatusChange(ConnectionStatus arg0) {}
-
-	@Override
-	public void onUserSpeaking(User arg0, boolean arg1) {}
-
 	public void addMsg(Message message) {
 		this.msgTab.add(message);
 	}
 
 	public JDA getJda() {
 		return this.jda;
+	}
+    
+    private TallyCounter getTallyCounter() {
+		return this.tallyCounter;
 	}
 
 	public List<Message> getMsgTab() {
