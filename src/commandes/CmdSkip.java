@@ -1,5 +1,6 @@
 package commandes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.MottoBot;
@@ -14,7 +15,11 @@ public class CmdSkip implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		return null;
+		List<String> alias = new ArrayList<String>();
+		alias.add("mottos");
+		alias.add("ms");
+		alias.add("mskip");
+		return alias;
 	}
 
 	@Override

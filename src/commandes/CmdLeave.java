@@ -1,5 +1,6 @@
 package commandes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.MottoBot;
@@ -14,7 +15,11 @@ public class CmdLeave implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		return null;
+		List<String> alias = new ArrayList<String>();
+		alias.add("mottol");
+		alias.add("ml");
+		alias.add("mleave");
+		return alias;
 	}
 
 	@Override

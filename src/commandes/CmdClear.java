@@ -16,7 +16,11 @@ public class CmdClear implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		return null;
+		List<String> alias = new ArrayList<String>();
+		alias.add("mc");
+		alias.add("mclear");
+		alias.add("mottoc");
+		return alias;
 	}
 
 	@Override

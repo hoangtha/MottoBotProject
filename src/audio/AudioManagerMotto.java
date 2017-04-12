@@ -21,7 +21,7 @@ public class AudioManagerMotto {
 		
 	}
 
-	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot, VoiceChannel vChannel) {
+	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot, VoiceChannel vChannel, boolean rechercheFlag) {
 
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 
@@ -29,7 +29,14 @@ public class AudioManagerMotto {
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				channel.sendMessage(":musical_note: Ajoutée à la playlist : " + track.getInfo().title).queue();
+				if(rechercheFlag)
+				{
+					channel.sendMessage(":musical_note: Ajoutée à la playlist : " + track.getInfo().title + " - " + trackUrl).queue() ;
+				}
+				else
+				{
+					channel.sendMessage(":musical_note: Ajoutée à la playlist : " + track.getInfo().title).queue();
+				}
 				play(channel.getGuild(), musicManager, track, vChannel);
 			}
 
@@ -91,7 +98,10 @@ public class AudioManagerMotto {
 		{
 			musicManager.scheduler.nextTrack();
 		}
-		channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
+		if(musicManager.scheduler.getPlaylist().size()>0)
+		{
+			channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
+		}
 	}
 
 	public static void connectToVoiceChannel(AudioManager audioManager, VoiceChannel vChannel) {

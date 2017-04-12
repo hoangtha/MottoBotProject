@@ -1,5 +1,6 @@
 package commandes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.MottoBot;
@@ -14,7 +15,14 @@ public class CmdClearPlaylist implements Commande {
 
 	@Override
 	public List<String> getAliases() {
-		return null;
+		List<String> alias = new ArrayList<String>();
+		alias.add("mottocp");
+		alias.add("mottocplaylist");
+		alias.add("mottoclearp");
+		alias.add("mcp");
+		alias.add("mcplaylist");
+		alias.add("mclearp");
+		return alias;
 	}
 
 	@Override

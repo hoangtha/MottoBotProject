@@ -1,6 +1,11 @@
 package commandes;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import main.MottoBot;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -9,12 +14,20 @@ public class CmdForcePlay implements Commande {
 
 	@Override
 	public String getName() {
-		return "mottofplay";
+		return "mottoforceplay";
 	}
 
 	@Override
 	public List<String> getAliases() {
-		return null;
+		List<String> alias = new ArrayList<String>();
+		alias.add("mottoforcep");
+		alias.add("mottofplay");
+		alias.add("mottofp");
+		alias.add("mfp");
+		alias.add("mforcep");
+		alias.add("mfplay");
+		alias.add("mforceplay");
+		return alias;
 	}
 
 	@Override
@@ -22,6 +35,28 @@ public class CmdForcePlay implements Commande {
 		bot.addMsg(e.getMessage());
 		
 		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), arguments, bot, e.getMember().getVoiceState().getChannel());
+	
+		boolean rechercheFlag = false;
+		Document doc;
+		String url = "https://www.youtube.com/results?sp=EgIQAQ%253D%253D&q=" + arguments;
+		String videoUrl = "";
+		
+		if(!arguments.startsWith(("http")))
+		{
+			try {
+				doc = Jsoup.connect(url).get();
+				videoUrl = "https://www.youtube.com" + doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
+						.orElse("/watch?v=dQw4w9WgXcQ");
+				rechercheFlag = true;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				videoUrl = "";
+			}
+		}
+		else
+		{
+			videoUrl = arguments;
+		}
+		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), videoUrl, bot, e.getMember().getVoiceState().getChannel(), rechercheFlag);
 	}
 }
