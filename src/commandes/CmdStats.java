@@ -9,6 +9,7 @@ import main.MemberStatistics;
 import main.MottoBot;
 import main.TallyCounter;
 import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -50,20 +51,43 @@ public class CmdStats implements Commande {
 			}
 			mb.append("Messages postés : "+messages+"\n");
 			mb.append("Commandes utilisées : "+commandes+"\n");
-			mb.append("Temps passé en ligne par tout les membres : "+tempsEnLigne+"\n");
-			mb.append("Temps passé en vocal par tout les membres : "+tempsEnVocal+"\n");
+			mb.append("Temps passé en ligne par tout les membres : "+formatDuration(tempsEnLigne)+"\n");
+			mb.append("Temps passé en vocal par tout les membres : "+formatDuration(tempsEnVocal)+"\n");
 		}
 		else {
-			MemberStatistics ms = guildStats.getOrDefault(e.getAuthor().getName()+"#"+e.getAuthor().getDiscriminator(), new MemberStatistics());
-			mb.append("Statistiques de "+e.getMember().getEffectiveName()+" :\n");
-			mb.append("Messages postés : "+ms.messages+"\n");
-			mb.append("Commandes utilisées : "+ms.commandes+"\n");
-			mb.append("Temps passé en ligne par tout les membres : "+ms.tempsEnLigne+"\n");
-			mb.append("Temps passé en vocal par tout les membres : "+ms.tempsEnVocal+"\n");
+			List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
+			Member target = null;
+			if(targetList.size()>=1) {
+				target = targetList.get(0);
+			}
+			if(target!=null) {
+				MemberStatistics ms = guildStats.getOrDefault(target.getUser().getName()+"#"+target.getUser().getDiscriminator(), new MemberStatistics());
+				mb.append("Statistiques de "+target.getEffectiveName()+" :\n");
+				mb.append("Messages postés : "+ms.messages+"\n");
+				mb.append("Commandes utilisées : "+ms.commandes+"\n");
+				mb.append("Temps passé en ligne par tout les membres : "+formatDuration(ms.tempsEnLigne)+"\n");
+				mb.append("Temps passé en vocal par tout les membres : "+formatDuration(ms.tempsEnVocal)+"\n");
+			}
+			else {
+				mb.append("Personne sur ce serveur ne porte ce nom\n");
+			}
 		}
 		mb.append("```");
 		Message m = mb.build();
 		e.getChannel().sendMessage(m).queue();
+	}
+
+	private static String formatDuration(Duration d) {
+		String res;
+		
+		long jours = d.toDays();
+		long heures = d.minusDays(jours).toHours();
+		long minutes = d.minusDays(jours).minusHours(heures).toMinutes();
+		long secondes = d.minusDays(jours).minusHours(heures).minusMinutes(minutes).getSeconds();
+		
+		res = jours + " jours, " + heures + " heures, " + minutes + " minutes et " + secondes + " secondes ";
+		
+		return res;
 	}
 
 }

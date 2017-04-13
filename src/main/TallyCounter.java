@@ -8,9 +8,10 @@ import java.util.TimerTask;
 
 import commandes.Commande;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceDeafenEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -23,29 +24,65 @@ public class TallyCounter extends ListenerAdapter {
 
 	public TallyCounter() {
 		this.perMemberStatistics = new Hashtable<String, Hashtable<String, MemberStatistics>>();
-		/*Timer timeTimer = new Timer();
+		Timer timeTimer = new Timer(true);
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 				updateTimeSpent();
 			}
 		};
-		timeTimer.schedule(task, 60000, 60000);*/
+		timeTimer.schedule(task, 10000, 10000);
 	}
 	
-	/*protected void updateTimeSpent() {
-		for(Hashtable<String, MemberStatistics> ms : guildTable.values()) {
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-		for(MemberStatistics ms : guildTable.values()) {
-			messages += ms.messages;
-			commandes += ms.commandes;
-			tempsEnLigne = tempsEnLigne.plus(ms.tempsEnLigne);
-			tempsEnVocal = tempsEnVocal.plus(ms.tempsEnVocal);
+	protected void updateTimeSpent() {
+		for(Hashtable<String, MemberStatistics> guildTable : this.perMemberStatistics.values()) {
+			for(MemberStatistics ms : guildTable.values()) {
+				if(ms.enLigne) {
+					ms.tempsEnLigne = ms.tempsEnLigne.plus(Duration.between(ms.debutEnLigne, Instant.now()));
+					ms.debutEnLigne = Instant.now();
+				}
+				if(ms.enVocal) {
+					ms.tempsEnVocal = ms.tempsEnVocal.plus(Duration.between(ms.debutVocal, Instant.now()));
+					ms.debutVocal = Instant.now();
+				}
+			}
 		}
-	}*/
+	}
 
 	public Hashtable<String, Hashtable<String, MemberStatistics>> getCounters() {
 		return this.perMemberStatistics;
+	}
+
+	public void statsInit(MottoBot bot) {
+		for(Guild g:bot.getJda().getGuilds()) {
+			String guildId = g.getId();
+			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+			for(Member m:g.getMembers()) {
+				String userName = m.getUser().getName() + "#" + m.getUser().getDiscriminator();
+				OnlineStatus status = m.getOnlineStatus();
+				
+				
+				MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+				if(status==OnlineStatus.OFFLINE || status==OnlineStatus.INVISIBLE) {
+					ms.debutEnLigne = null;
+					ms.enLigne = false;
+				}
+				else {
+					ms.debutEnLigne = Instant.now();
+					ms.enLigne = true;
+				}
+				if(m.getVoiceState().inVoiceChannel()==false) {
+					ms.debutVocal = null;
+					ms.enVocal = false;
+				}
+				else {
+					ms.debutVocal = Instant.now();
+					ms.enVocal = true;
+				}
+				guildTable.putIfAbsent(userName, ms);
+			}
+			this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+		}
 	}
 
 	@Override
@@ -54,37 +91,18 @@ public class TallyCounter extends ListenerAdapter {
 		String userName = event.getUser().getName() + "#" + event.getUser().getDiscriminator();
 		OnlineStatus status = event.getGuild().getMember(event.getUser()).getOnlineStatus();
 
-		if(this.perMemberStatistics.containsKey(guildId)==false) {
-			Hashtable<String, MemberStatistics> ht = new Hashtable<String, MemberStatistics>();
-			MemberStatistics ms = new MemberStatistics();
-			if (event.getPreviousOnlineStatus()==OnlineStatus.OFFLINE) {
-				ms.debutEnLigne = Instant.now();
-			}
-			ht.put(userName, ms);
-			this.perMemberStatistics.put(guildId, ht);
+		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		if (event.getPreviousOnlineStatus()==OnlineStatus.OFFLINE || event.getPreviousOnlineStatus()==OnlineStatus.INVISIBLE) {
+			ms.debutEnLigne = Instant.now();
+			ms.enLigne = true;
 		}
-		else {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			if(guildTable.containsKey(userName)==false) {
-				MemberStatistics ms = new MemberStatistics();
-				if (event.getPreviousOnlineStatus()==OnlineStatus.OFFLINE) {
-					ms.debutEnLigne = Instant.now();
-				}
-				guildTable.put(userName, ms);
-			}
-			else {
-				MemberStatistics ms = guildTable.get(userName);
-				if(status==OnlineStatus.OFFLINE) {
-					if(ms.debutEnLigne!=null) { 
-						ms.tempsEnLigne = ms.tempsEnLigne.plus(Duration.between(ms.debutEnLigne, Instant.now()));
-					}
-					ms.debutEnLigne = null;
-				}
-				else if (event.getPreviousOnlineStatus()==OnlineStatus.OFFLINE) {
-					ms.debutEnLigne = Instant.now();
-				}
-			}
+		else if(status==OnlineStatus.OFFLINE || status==OnlineStatus.INVISIBLE) {
+			ms.debutEnLigne = null;
+			ms.enLigne = false;
 		}
+		guildTable.putIfAbsent(userName, ms);
+		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
 	}
 
 	@Override
@@ -92,25 +110,11 @@ public class TallyCounter extends ListenerAdapter {
 		String guildId = event.getGuild().getId();
 		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
 		
-		if(this.perMemberStatistics.containsKey(guildId)==false) {
-			Hashtable<String, MemberStatistics> ht = new Hashtable<String, MemberStatistics>();
-			MemberStatistics ms = new MemberStatistics();
-			ms.messages++;
-			ht.put(userName, ms);
-			this.perMemberStatistics.put(guildId, ht);
-		}
-		else {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			if(guildTable.containsKey(userName)==false) {
-				MemberStatistics ms = new MemberStatistics();
-				ms.messages++;
-				guildTable.put(userName, ms);
-			}
-			else {
-				MemberStatistics ms = guildTable.get(userName);
-				ms.messages++;
-			}
-		}
+		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		ms.messages++;
+		guildTable.putIfAbsent(userName, ms);
+		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
 	}
 	
 	@Override
@@ -118,24 +122,15 @@ public class TallyCounter extends ListenerAdapter {
 		String guildId = event.getGuild().getId();
 		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
 		OnlineStatus status = event.getMember().getOnlineStatus();
-
-		if(this.perMemberStatistics.containsKey(guildId)==false) {
-			Hashtable<String, MemberStatistics> ht = new Hashtable<String, MemberStatistics>();
-			MemberStatistics ms = new MemberStatistics();
-			if(status!=OnlineStatus.OFFLINE) {
-				ms.debutEnLigne = Instant.now();
-			}
-			ht.put(userName, ms);
-			this.perMemberStatistics.put(guildId, ht);
+		
+		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		if(status!=OnlineStatus.OFFLINE && status!=OnlineStatus.INVISIBLE) {
+			ms.debutEnLigne = Instant.now();
+			ms.enLigne = true;
 		}
-		else {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			MemberStatistics ms = new MemberStatistics();
-			if(status!=OnlineStatus.OFFLINE) {
-				ms.debutEnLigne = Instant.now();
-			}
-			guildTable.put(userName, ms);
-		}
+		guildTable.putIfAbsent(userName, ms);
+		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
 	}
 
 	@Override
@@ -154,25 +149,12 @@ public class TallyCounter extends ListenerAdapter {
 		String guildId = event.getGuild().getId();
 		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
 
-		if(this.perMemberStatistics.containsKey(guildId)==false) {
-			Hashtable<String, MemberStatistics> ht = new Hashtable<String, MemberStatistics>();
-			MemberStatistics ms = new MemberStatistics();
-			ms.debutVocal = Instant.now();
-			ht.put(userName, ms);
-			this.perMemberStatistics.put(guildId, ht);
-		}
-		else {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			if(guildTable.containsKey(userName)==false) {
-				MemberStatistics ms = new MemberStatistics();
-				ms.debutVocal = Instant.now();
-				guildTable.put(userName, ms);
-			}
-			else {
-				MemberStatistics ms = guildTable.get(userName);
-				ms.debutVocal = Instant.now();
-			}
-		}
+		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		ms.debutVocal = Instant.now();
+		ms.enVocal = true;
+		guildTable.putIfAbsent(userName, ms);
+		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
 	}
 
 	@Override
@@ -180,55 +162,22 @@ public class TallyCounter extends ListenerAdapter {
 		String guildId = event.getGuild().getId();
 		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
 
-		if(this.perMemberStatistics.containsKey(guildId)==false) {
-			Hashtable<String, MemberStatistics> ht = new Hashtable<String, MemberStatistics>();
-			MemberStatistics ms = new MemberStatistics();
-			ht.put(userName, ms);
-			this.perMemberStatistics.put(guildId, ht);
-		}
-		else {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			if(guildTable.containsKey(userName)==false) {
-				MemberStatistics ms = new MemberStatistics();
-				guildTable.put(userName, ms);
-			}
-			else {
-				MemberStatistics ms = guildTable.get(userName);
-				if(ms.debutVocal!=null) {
-					ms.tempsEnVocal = ms.tempsEnVocal.plus(Duration.between(ms.debutVocal, Instant.now()));
-					ms.debutVocal = null;
-				}
-			}
-		}
-	}
-
-	@Override
-	public void onGuildVoiceDeafen(GuildVoiceDeafenEvent event) {
-		// TODO: Similaire à 'onUserOnlineStatusUpdate'
+		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		ms.debutVocal = null;
+		ms.enVocal = false;
+		guildTable.putIfAbsent(userName, ms);
+		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
 	}
 
 	public void onCommandUse(MessageReceivedEvent event, Commande commande) {
 		String guildId = event.getGuild().getId();
 		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
 		
-		if(this.perMemberStatistics.containsKey(guildId)==false) {
-			Hashtable<String, MemberStatistics> ht = new Hashtable<String, MemberStatistics>();
-			MemberStatistics ms = new MemberStatistics();
-			ms.commandes++;
-			ht.put(userName, ms);
-			this.perMemberStatistics.put(guildId, ht);
-		}
-		else {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			if(guildTable.containsKey(userName)==false) {
-				MemberStatistics ms = new MemberStatistics();
-				ms.commandes++;
-				guildTable.put(userName, ms);
-			}
-			else {
-				MemberStatistics ms = guildTable.get(userName);
-				ms.commandes++;
-			}
-		}
+		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		ms.commandes++;
+		guildTable.putIfAbsent(userName, ms);
+		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
 	}
 }

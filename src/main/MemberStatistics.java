@@ -11,6 +11,8 @@ public class MemberStatistics {
 	public Duration tempsEnVocal;
 	public Instant debutEnLigne;
 	public Instant debutVocal;
+	public boolean enLigne;
+	public boolean enVocal;
 	
 	public MemberStatistics() {
 		this.messages = 0;
@@ -19,5 +21,7 @@ public class MemberStatistics {
 		this.tempsEnVocal = Duration.ZERO;
 		this.debutEnLigne = null;
 		this.debutVocal = null;
+		this.enLigne = false;
+		this.enVocal = false;
 	}
 }

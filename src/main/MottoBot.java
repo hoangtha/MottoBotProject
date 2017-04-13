@@ -84,6 +84,7 @@ public class MottoBot extends ListenerAdapter
 		MottoBot m = new MottoBot(args[0]);
 		m.registerCommands();
 		m.jda.addEventListener(m);
+		m.getTallyCounter().statsInit(m);
 		m.jda.addEventListener(m.getTallyCounter());
 		m.run();
 	}
