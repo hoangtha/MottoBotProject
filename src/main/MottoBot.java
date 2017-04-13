@@ -66,8 +66,7 @@ public class MottoBot extends ListenerAdapter
 		this.jda.getPresence().setGame(Game.of("=motto"));
 		
 		this.musicManagers = new HashMap<>();
-		this.tallyCounter = new TallyCounter();
-		
+		this.tallyCounter = new TallyCounter("./usersStatistics.ser");
 
 		this.playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(this.playerManager);
@@ -119,6 +118,7 @@ public class MottoBot extends ListenerAdapter
 			if (cmd.equalsIgnoreCase("stop"))
 			{
 				System.out.println("Arrêt demandé");
+				this.tallyCounter.saveToFile();
 				this.jda.shutdown(true);
 				stop = true;
 			}
@@ -127,6 +127,15 @@ public class MottoBot extends ListenerAdapter
 				System.out.println("Recherche de commandes");
 				this.registerCommands();
 				System.out.println("Recherche terminée");
+			}
+			else if (cmd.equalsIgnoreCase("forceSave"))
+			{
+				if(this.tallyCounter.saveToFile()) {
+					System.out.println("Sauvegarde terminée.");
+				} 
+				else {
+					System.out.println("Erreur de sauvegarde.");
+				}
 			}
 		}
 		scanner.close();

@@ -1,5 +1,10 @@
 package main;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Hashtable;
@@ -21,17 +26,59 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class TallyCounter extends ListenerAdapter {
 	private Hashtable<String, Hashtable<String, MemberStatistics>> perMemberStatistics;
+	private String path;
 
 	public TallyCounter() {
 		this.perMemberStatistics = new Hashtable<String, Hashtable<String, MemberStatistics>>();
+		this.path = "./usersStatistics.ser";
 		Timer timeTimer = new Timer(true);
-		TimerTask task = new TimerTask() {
+		TimerTask timeTask = new TimerTask() {
 			@Override
 			public void run() {
 				updateTimeSpent();
 			}
 		};
-		timeTimer.schedule(task, 10000, 10000);
+		timeTimer.schedule(timeTask, 10000, 10000);
+		TimerTask saveTask = new TimerTask() {
+			@Override
+			public void run() {
+				updateTimeSpent();
+			}
+		};
+		timeTimer.schedule(saveTask, 15000, 60000);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public TallyCounter(String path) {
+		this.perMemberStatistics = null;
+		this.path = path;
+		
+		try {
+			FileInputStream fileIn = new FileInputStream(this.path);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			this.perMemberStatistics = (Hashtable<String, Hashtable<String, MemberStatistics>>) in.readObject();
+			in.close();
+			fileIn.close();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			this.perMemberStatistics = new Hashtable<String, Hashtable<String, MemberStatistics>>();
+		}
+		
+		Timer timeTimer = new Timer(true);
+		TimerTask timeTask = new TimerTask() {
+			@Override
+			public void run() {
+				updateTimeSpent();
+			}
+		};
+		timeTimer.schedule(timeTask, 10000, 10000);
+		TimerTask saveTask = new TimerTask() {
+			@Override
+			public void run() {
+				saveToFile();
+			}
+		};
+		timeTimer.schedule(saveTask, 15000, 60000);
 	}
 	
 	protected void updateTimeSpent() {
@@ -47,6 +94,20 @@ public class TallyCounter extends ListenerAdapter {
 				}
 			}
 		}
+	}
+	
+	public boolean saveToFile() {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(this.path);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(this.perMemberStatistics);
+			out.close();
+			fileOut.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	public Hashtable<String, Hashtable<String, MemberStatistics>> getCounters() {

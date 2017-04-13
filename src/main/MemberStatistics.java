@@ -1,9 +1,11 @@
 package main;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 
-public class MemberStatistics {
+public class MemberStatistics implements Serializable {
+	private static final long serialVersionUID = 42L;
 	public int messages;
 	public int commandes;
 	
