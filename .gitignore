@@ -56,3 +56,5 @@ bin/main/Main.class
 *.class
 *.classpath
 /target/
+launch.bat
+*.jar
