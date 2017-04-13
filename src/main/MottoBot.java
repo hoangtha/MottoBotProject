@@ -163,6 +163,7 @@ public class MottoBot extends ListenerAdapter
         if (commande.isPresent()) {
         	// La commande existe
             commande.get().run(this, e, arguments);
+            this.tallyCounter.onCommandUse(e, commande.get());
         } else {
         	// Commande inconnue
         }
@@ -176,7 +177,7 @@ public class MottoBot extends ListenerAdapter
 		return this.jda;
 	}
     
-    private TallyCounter getTallyCounter() {
+    public TallyCounter getTallyCounter() {
 		return this.tallyCounter;
 	}
 
