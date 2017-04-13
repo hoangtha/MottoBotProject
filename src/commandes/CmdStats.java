@@ -38,7 +38,7 @@ public class CmdStats implements Commande {
 		MessageBuilder mb = new MessageBuilder();
 		mb.append("```");
 		if(arguments==null || arguments.isEmpty()) {
-			mb.append("Statistiques du serveur :\n");
+			mb.append("Statistiques du serveur :\n\n");
 			int messages = 0;
 			int commandes = 0;
 			Duration tempsEnLigne = Duration.ZERO;
@@ -62,11 +62,11 @@ public class CmdStats implements Commande {
 			}
 			if(target!=null) {
 				MemberStatistics ms = guildStats.getOrDefault(target.getUser().getName()+"#"+target.getUser().getDiscriminator(), new MemberStatistics());
-				mb.append("Statistiques de "+target.getEffectiveName()+" :\n");
+				mb.append("Statistiques de "+target.getEffectiveName()+" :\n\n");
 				mb.append("Messages postés : "+ms.messages+"\n");
 				mb.append("Commandes utilisées : "+ms.commandes+"\n");
-				mb.append("Temps passé en ligne par tout les membres : "+formatDuration(ms.tempsEnLigne)+"\n");
-				mb.append("Temps passé en vocal par tout les membres : "+formatDuration(ms.tempsEnVocal)+"\n");
+				mb.append("Temps passé en ligne : "+formatDuration(ms.tempsEnLigne)+"\n");
+				mb.append("Temps passé en vocal : "+formatDuration(ms.tempsEnVocal)+"\n");
 			}
 			else {
 				mb.append("Personne sur ce serveur ne porte ce nom\n");
