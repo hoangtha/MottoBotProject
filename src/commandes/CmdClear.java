@@ -29,7 +29,6 @@ public class CmdClear implements Commande {
 		
 		List<Message> temp = new ArrayList<Message>();
 		int nbMessageInitial = 0;
-		bot.addMsg(e.getMessage());
 		while (bot.getMsgTab().size() != 0)
 		{
 			Message messageToDelete = bot.getMsgTab().get(bot.getMsgTab().size() - 1);
