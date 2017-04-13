@@ -169,6 +169,9 @@ public class TallyCounter extends ListenerAdapter {
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		String guildId = event.getGuild().getId();
+		if(event.getMember()==null || event.getMember().getUser()==null || event.getMember().getUser().getName()==null || event.getMember().getUser().getDiscriminator()==null) {
+			return;
+		}
 		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
 		
 		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
