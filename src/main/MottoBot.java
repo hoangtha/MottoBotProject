@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import javax.security.auth.login.LoginException;
 
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -32,7 +34,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class MottoBot extends ListenerAdapter
 {
 	// https://discordapp.com/oauth2/authorize?client_id=282539502818426892&scope=bot&permissions=-1
-
 	private JDA jda;
 
 	private List<Message> msgTab;
@@ -66,7 +67,7 @@ public class MottoBot extends ListenerAdapter
 		this.jda.getPresence().setGame(Game.of("=motto"));
 		
 		this.musicManagers = new HashMap<>();
-		this.tallyCounter = new TallyCounter("./usersStatistics.ser");
+		this.tallyCounter = new TallyCounter(this, "./userProgress.ser");
 
 		this.playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(this.playerManager);
@@ -83,7 +84,7 @@ public class MottoBot extends ListenerAdapter
 		MottoBot m = new MottoBot(args[0]);
 		m.registerCommands();
 		m.jda.addEventListener(m);
-		m.getTallyCounter().statsInit(m);
+		m.getTallyCounter().statsInit();
 		m.jda.addEventListener(m.getTallyCounter());
 		m.run();
 	}
@@ -137,6 +138,12 @@ public class MottoBot extends ListenerAdapter
 					System.out.println("Erreur de sauvegarde.");
 				}
 			}
+			else if (cmd.equalsIgnoreCase("checkLevelUp"))
+			{
+				System.out.println("Vérification des level up...");
+				this.tallyCounter.checkLevelUpForEveryone();
+				System.out.println("Vérification des level up terminée!");
+			}
 		}
 		scanner.close();
 	}
@@ -172,7 +179,7 @@ public class MottoBot extends ListenerAdapter
                 .findAny();
         if (commande.isPresent()) {
         	// La commande existe
-            commande.get().run(this, e, arguments);
+        	commande.get().run(this, e, arguments);
             this.tallyCounter.onCommandUse(e, commande.get());
         } else {
         	// Commande inconnue

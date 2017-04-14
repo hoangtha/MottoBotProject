@@ -1,5 +1,6 @@
 package commandes;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import main.MottoBot;
@@ -21,6 +22,8 @@ public class CmdPing implements Commande {
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		e.getChannel().sendTyping();
-		e.getChannel().sendMessage("dé-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pédé va.").queue();
+		e.getChannel().sendMessage("dé-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pédé va.").queue(m -> {
+            m.editMessage("dé-aisse-elle mec, mais t'as cru que j'allais t'envoyer pong ? pédé va. ("+e.getMessage().getCreationTime().until(m.getCreationTime(), ChronoUnit.MILLIS)+"ms)").queue();
+        });
 	}
 }

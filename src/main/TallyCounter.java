@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,16 +8,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import commandes.Commande;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -25,43 +29,28 @@ import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class TallyCounter extends ListenerAdapter {
-	private Hashtable<String, Hashtable<String, MemberStatistics>> perMemberStatistics;
-	private String path;
-
-	public TallyCounter() {
-		this.perMemberStatistics = new Hashtable<String, Hashtable<String, MemberStatistics>>();
-		this.path = "./usersStatistics.ser";
-		Timer timeTimer = new Timer(true);
-		TimerTask timeTask = new TimerTask() {
-			@Override
-			public void run() {
-				updateTimeSpent();
-			}
-		};
-		timeTimer.schedule(timeTask, 10000, 10000);
-		TimerTask saveTask = new TimerTask() {
-			@Override
-			public void run() {
-				updateTimeSpent();
-			}
-		};
-		timeTimer.schedule(saveTask, 15000, 60000);
-	}
+	private Hashtable<String, Hashtable<String, UserProgress>> userProgress;
+	private String pathProgress;
+	private ArrayList<String> activeGuilds;
+	private MottoBot bot;
 	
 	@SuppressWarnings("unchecked")
-	public TallyCounter(String path) {
-		this.perMemberStatistics = null;
-		this.path = path;
+	public TallyCounter(MottoBot bot, String pathProgress) {
+		this.pathProgress = pathProgress;
+		this.activeGuilds = new ArrayList<String>();
+		this.activeGuilds.add("269163044427268096"); // FP
+		this.bot = bot;
 		
 		try {
-			FileInputStream fileIn = new FileInputStream(this.path);
+			FileInputStream fileIn = new FileInputStream(this.pathProgress);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			this.perMemberStatistics = (Hashtable<String, Hashtable<String, MemberStatistics>>) in.readObject();
+			this.userProgress = (Hashtable<String, Hashtable<String, UserProgress>>) in.readObject();
 			in.close();
 			fileIn.close();
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-			this.perMemberStatistics = new Hashtable<String, Hashtable<String, MemberStatistics>>();
+			System.out.println("Erreur lors du chargement de "+this.pathProgress+", création d'une nouvelle table.");
+			this.userProgress = new Hashtable<String, Hashtable<String, UserProgress>>();
 		}
 		
 		Timer timeTimer = new Timer(true);
@@ -71,26 +60,111 @@ public class TallyCounter extends ListenerAdapter {
 				updateTimeSpent();
 			}
 		};
-		timeTimer.schedule(timeTask, 10000, 10000);
+		timeTimer.schedule(timeTask, 10000, 10000); //10s
 		TimerTask saveTask = new TimerTask() {
 			@Override
 			public void run() {
 				saveToFile();
 			}
 		};
-		timeTimer.schedule(saveTask, 15000, 60000);
+		timeTimer.schedule(saveTask, 15000, 60000); // 1min
+		TimerTask levelUp = new TimerTask() {
+			@Override
+			public void run() {
+				checkLevelUpForEveryone();
+			}
+		};
+		timeTimer.schedule(levelUp, 5000, 43200000); // 12h
+	}
+	
+	private void checkLevelUp(UserProgress up, String guildId) {
+		if(this.activeGuilds.contains(guildId) && up.checkLevelUp()>0) {
+			EmbedBuilder mb = new EmbedBuilder();
+			mb.setColor(new Color(200,50,50));
+			mb.setTitle("LEVEL UP !", null);
+			String effName = this.bot.getJda().getGuildById(up.guildId).getMemberById(up.userId).getEffectiveName();
+			int newLevel = up.level+up.checkLevelUp();
+			int newPrestige = up.prestige;
+			while (newLevel>100) {
+				newPrestige++;
+				newLevel -= 100;
+			}
+			String text = "Niveau "+up.level+" -> "+newLevel+" ! ";
+			up.level = newLevel;
+			if(up.prestige!=newPrestige) {
+				text += "\nPrestige "+up.prestige+"★ -> "+newPrestige+"★ !";
+				up.prestige = newPrestige;
+			}
+			mb.addField(effName, text, false);
+			List<TextChannel> channels = this.bot.getJda().getGuildById(guildId).getTextChannelsByName("annonces", true);
+			if(channels!=null && channels.isEmpty()==false) {
+				channels.get(0).sendMessage(mb.build()).queue();
+			}
+			else {
+				System.out.println("Pas de canal annonces pour les level up sur la guilde "+guildId);
+			}
+		}
+	}
+
+	protected void checkLevelUpForEveryone() {
+		ArrayList<UserProgress> events = new ArrayList<UserProgress>();
+		for(String guildId : this.activeGuilds) {
+			Hashtable<String, UserProgress> guildTable = this.userProgress.get(guildId);
+			if(guildTable==null)
+				continue;
+			for(UserProgress up : guildTable.values()) {
+				int lvlUps = up.checkLevelUp();
+				if(lvlUps>0)
+					events.add(up);
+			}
+			
+			if(events.size()>0) {
+				if(this.activeGuilds.contains(guildId)) {
+					EmbedBuilder mb = new EmbedBuilder();
+					mb.setColor(new Color(200,50,50));
+					mb.setTitle("LEVEL UP !", null);
+					for(UserProgress up:events) {
+						String effName = this.bot.getJda().getGuildById(up.guildId).getMemberById(up.userId).getEffectiveName();
+						int newLevel = up.level+up.checkLevelUp();
+						int newPrestige = up.prestige;
+						while (newLevel>100) {
+							newPrestige++;
+							newLevel -= 100;
+						}
+						String text = "Niveau "+up.level+" -> "+newLevel+" !";
+						up.level = newLevel;
+						if(up.prestige!=newPrestige) {
+							text += "\nPrestige "+up.prestige+"★ -> "+newPrestige+"★ !";
+							up.prestige = newPrestige;
+						}
+						mb.addField(effName, text, false);
+					}
+					List<TextChannel> channels = this.bot.getJda().getGuildById(guildId).getTextChannelsByName("annonces", true);
+					if(channels!=null && channels.isEmpty()==false) {
+						channels.get(0).sendMessage(mb.build()).queue();
+					}
+					else {
+						System.out.println("Pas de canal annonces pour les level up sur la guilde "+guildId);
+					}
+				}
+				events.clear();
+			}
+		}
 	}
 	
 	protected void updateTimeSpent() {
-		for(Hashtable<String, MemberStatistics> guildTable : this.perMemberStatistics.values()) {
-			for(MemberStatistics ms : guildTable.values()) {
-				if(ms.enLigne) {
-					ms.tempsEnLigne = ms.tempsEnLigne.plus(Duration.between(ms.debutEnLigne, Instant.now()));
-					ms.debutEnLigne = Instant.now();
+		Instant now = Instant.now();
+		for(Hashtable<String, UserProgress> guildTable : this.userProgress.values()) {
+			for(UserProgress up : guildTable.values()) {
+				if(up.isOnline) {
+					up.timeSpentOnline = up.timeSpentOnline.plus(Duration.between(up.onlineStart, now));
+					up.rewardOnlineTimeExperience(Duration.between(up.onlineStart, now).getSeconds());
+					up.onlineStart = now;
 				}
-				if(ms.enVocal) {
-					ms.tempsEnVocal = ms.tempsEnVocal.plus(Duration.between(ms.debutVocal, Instant.now()));
-					ms.debutVocal = Instant.now();
+				if(up.isVocal) {
+					up.timeSpentVocal = up.timeSpentVocal.plus(Duration.between(up.vocalStart, now));
+					up.rewardVocalTimeExperience(Duration.between(up.vocalStart, now).getSeconds());
+					up.vocalStart = now;
 				}
 			}
 		}
@@ -98,9 +172,9 @@ public class TallyCounter extends ListenerAdapter {
 	
 	public boolean saveToFile() {
 		try {
-			FileOutputStream fileOut = new FileOutputStream(this.path);
+			FileOutputStream fileOut = new FileOutputStream(this.pathProgress);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(this.perMemberStatistics);
+			out.writeObject(this.userProgress);
 			out.close();
 			fileOut.close();
 		} catch(IOException e) {
@@ -110,138 +184,165 @@ public class TallyCounter extends ListenerAdapter {
 		return true;
 	}
 
-	public Hashtable<String, Hashtable<String, MemberStatistics>> getCounters() {
-		return this.perMemberStatistics;
+	public Hashtable<String, Hashtable<String, UserProgress>> getProgress() {
+		return this.userProgress;
 	}
 
-	public void statsInit(MottoBot bot) {
-		for(Guild g:bot.getJda().getGuilds()) {
+	public void statsInit() {
+		for(Guild g:this.bot.getJda().getGuilds()) {
 			String guildId = g.getId();
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
+			Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
 			for(Member m:g.getMembers()) {
-				String userName = m.getUser().getName() + "#" + m.getUser().getDiscriminator();
+				if(m.getUser().isBot())
+					continue;
+				String userId = m.getUser().getId();
+				String name = m.getUser().getName();
+				String discriminator = m.getUser().getDiscriminator();
+				String userName = name + "#" + discriminator;
 				OnlineStatus status = m.getOnlineStatus();
 				
-				
-				MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+				UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
 				if(status==OnlineStatus.OFFLINE || status==OnlineStatus.INVISIBLE) {
-					ms.debutEnLigne = null;
-					ms.enLigne = false;
+					up.onlineStart = null;
+					up.isOnline = false;
 				}
 				else {
-					ms.debutEnLigne = Instant.now();
-					ms.enLigne = true;
+					up.onlineStart = Instant.now();
+					up.isOnline = true;
 				}
 				if(m.getVoiceState().inVoiceChannel()==false) {
-					ms.debutVocal = null;
-					ms.enVocal = false;
+					up.vocalStart = null;
+					up.isVocal = false;
 				}
 				else {
-					ms.debutVocal = Instant.now();
-					ms.enVocal = true;
+					up.vocalStart = Instant.now();
+					up.isVocal = true;
 				}
-				guildTable.putIfAbsent(userName, ms);
+				guildTable.putIfAbsent(userName, up);
 			}
-			this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+			this.userProgress.putIfAbsent(guildId, guildTable);
 		}
 	}
 
 	@Override
 	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
+		if(event.getUser().isBot())
+			return;
 		String guildId = event.getGuild().getId();
-		String userName = event.getUser().getName() + "#" + event.getUser().getDiscriminator();
+		String userId = event.getUser().getId();
+		String name = event.getUser().getName();
+		String discriminator = event.getUser().getDiscriminator();
+		String userName = name + "#" + discriminator;
 		OnlineStatus status = event.getGuild().getMember(event.getUser()).getOnlineStatus();
 
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
-		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
+		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
 		if (event.getPreviousOnlineStatus()==OnlineStatus.OFFLINE || event.getPreviousOnlineStatus()==OnlineStatus.INVISIBLE) {
-			ms.debutEnLigne = Instant.now();
-			ms.enLigne = true;
+			up.onlineStart = Instant.now();
+			up.isOnline = true;
 		}
 		else if(status==OnlineStatus.OFFLINE || status==OnlineStatus.INVISIBLE) {
-			ms.debutEnLigne = null;
-			ms.enLigne = false;
+			up.onlineStart = null;
+			up.isOnline = false;
 		}
-		guildTable.putIfAbsent(userName, ms);
-		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+		guildTable.putIfAbsent(userName, up);
+		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		String guildId = event.getGuild().getId();
-		if(event.getMember()==null || event.getMember().getUser()==null || event.getMember().getUser().getName()==null || event.getMember().getUser().getDiscriminator()==null) {
+		if(event.getAuthor().isBot() || event.getMember()==null || event.getMember().getUser()==null || 
+				event.getMember().getUser().getName()==null || event.getMember().getUser().getDiscriminator()==null)
 			return;
-		}
-		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
+		String guildId = event.getGuild().getId();
+		String userId = event.getMember().getUser().getId();
+		String name = event.getMember().getUser().getName();
+		String discriminator = event.getMember().getUser().getDiscriminator();
+		String userName = name + "#" + discriminator;
 		
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
-		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
-		ms.messages++;
-		guildTable.putIfAbsent(userName, ms);
-		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
+		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
+		up.messages++;
+		up.rewardMessageExperience(event.getMessage().getContent().length());
+		checkLevelUp(up, guildId);
+		guildTable.putIfAbsent(userName, up);
+		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 	
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+		if(event.getMember().getUser().isBot())
+			return;
 		String guildId = event.getGuild().getId();
-		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
+		String userId = event.getMember().getUser().getId();
+		String name = event.getMember().getUser().getName();
+		String discriminator = event.getMember().getUser().getDiscriminator();
+		String userName = name + "#" + discriminator;
 		OnlineStatus status = event.getMember().getOnlineStatus();
 		
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
-		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
+		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
+		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
 		if(status!=OnlineStatus.OFFLINE && status!=OnlineStatus.INVISIBLE) {
-			ms.debutEnLigne = Instant.now();
-			ms.enLigne = true;
+			up.onlineStart = Instant.now();
+			up.isOnline = true;
 		}
-		guildTable.putIfAbsent(userName, ms);
-		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
-	}
-
-	@Override
-	public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
-		String guildId = event.getGuild().getId();
-		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
-
-		if(this.perMemberStatistics.containsKey(guildId)==true) {
-			Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.get(guildId);
-			guildTable.remove(userName);
-		}
+		guildTable.putIfAbsent(userName, up);
+		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 
 	@Override
 	public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
+		if(event.getMember().getUser().isBot())
+			return;
 		String guildId = event.getGuild().getId();
-		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
+		String userId = event.getMember().getUser().getId();
+		String name = event.getMember().getUser().getName();
+		String discriminator = event.getMember().getUser().getDiscriminator();
+		String userName = name + "#" + discriminator;
 
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
-		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
-		ms.debutVocal = Instant.now();
-		ms.enVocal = true;
-		guildTable.putIfAbsent(userName, ms);
-		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
+		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
+		up.vocalStart = Instant.now();
+		up.isVocal = true;
+		guildTable.putIfAbsent(userName, up);
+		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 
 	@Override
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
+		if(event.getMember().getUser().isBot())
+			return;
 		String guildId = event.getGuild().getId();
-		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
+		String userId = event.getMember().getUser().getId();
+		String name = event.getMember().getUser().getName();
+		String discriminator = event.getMember().getUser().getDiscriminator();
+		String userName = name + "#" + discriminator;
 
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
-		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
-		ms.debutVocal = null;
-		ms.enVocal = false;
-		guildTable.putIfAbsent(userName, ms);
-		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
+		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
+		up.vocalStart = null;
+		up.isVocal = false;
+		guildTable.putIfAbsent(userName, up);
+		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 
 	public void onCommandUse(MessageReceivedEvent event, Commande commande) {
+		if(event.getMember().getUser().isBot())
+			return;
 		String guildId = event.getGuild().getId();
-		String userName = event.getMember().getUser().getName() + "#" + event.getMember().getUser().getDiscriminator();
+		String userId = event.getMember().getUser().getId();
+		String name = event.getMember().getUser().getName();
+		String discriminator = event.getMember().getUser().getDiscriminator();
+		String userName = name + "#" + discriminator;
 		
-		Hashtable<String, MemberStatistics> guildTable = this.perMemberStatistics.getOrDefault(guildId, new Hashtable<String, MemberStatistics>());
-		MemberStatistics ms = guildTable.getOrDefault(userName, new MemberStatistics());
-		ms.commandes++;
-		guildTable.putIfAbsent(userName, ms);
-		this.perMemberStatistics.putIfAbsent(guildId, guildTable);
+		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
+		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
+		up.commands++;
+		int n = up.commandsStats.getOrDefault(commande.getName(), 0) + 1;
+		up.commandsStats.put(commande.getName(), n);
+		up.rewardCommandExperience();
+		checkLevelUp(up, guildId);
+		guildTable.putIfAbsent(userName, up);
+		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 }
