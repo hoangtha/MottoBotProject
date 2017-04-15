@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
 import javax.security.auth.login.LoginException;
 
 import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -179,8 +177,8 @@ public class MottoBot extends ListenerAdapter
                 .findAny();
         if (commande.isPresent()) {
         	// La commande existe
+        	this.tallyCounter.onCommandUse(e, commande.get());
         	commande.get().run(this, e, arguments);
-            this.tallyCounter.onCommandUse(e, commande.get());
         } else {
         	// Commande inconnue
         }
