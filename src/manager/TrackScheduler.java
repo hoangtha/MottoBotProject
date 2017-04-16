@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
-	private final BlockingQueue<AudioTrack> queue;
+	private final ArrayList<AudioTrack> queue;
 	private ArrayList<String> playlist;
 
 	/**
@@ -26,7 +26,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	 */
 	public TrackScheduler(AudioPlayer player) {
 		this.player = player;
-		this.queue = new LinkedBlockingQueue<>();
+		this.queue = new ArrayList<AudioTrack>();
 		this.playlist = new ArrayList<String>();
 	}
 
@@ -44,7 +44,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		// the player was already playing so this
 		// track goes to the queue instead.
 		if (!this.player.startTrack(track, true)) {
-			this.queue.offer(track);
+			this.queue.add(track);
 			this.playlist.add(track.getInfo().title);
 		}
 	}
@@ -60,7 +60,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		for(int i = 0; i<list.size(); i++)
 		{
 			if (!this.player.startTrack(list.get(i), true)) {
-				this.queue.offer(list.get(i));
+				this.queue.add(list.get(i));
 				this.playlist.add(list.get(i).getInfo().title);
 			}
 		}
@@ -74,10 +74,11 @@ public class TrackScheduler extends AudioEventAdapter {
 		// or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply
 		// stop the player.
-		this.player.startTrack(this.queue.poll(), false);
+		this.player.startTrack(this.queue.get(0), false);
 		if(this.playlist.size()!=0)
 		{
 			this.playlist.remove(0);
+			this.queue.remove(0);
 		}
 	}
 

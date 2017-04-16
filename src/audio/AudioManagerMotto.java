@@ -96,6 +96,7 @@ public class AudioManagerMotto {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		for(int i = 0; i<nbOfSkips; i++)
 		{
+		
 			musicManager.scheduler.nextTrack();
 		}
 		if(musicManager.scheduler.getPlaylist().size()>0)
@@ -111,6 +112,7 @@ public class AudioManagerMotto {
 	
 	public void clearQueue(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
+		musicManager.player.stopTrack();
 		for(int i = 0; i<musicManager.scheduler.getPlaylist().size(); i++)
 			musicManager.scheduler.nextTrack();
 	}
@@ -121,11 +123,7 @@ public class AudioManagerMotto {
 		if(musicManager.player.getPlayingTrack() != null)
 		{
 			List<String> playlist = musicManager.scheduler.getPlaylist();
-			playlistText = "```Playlist :\n0. "+musicManager.player.getPlayingTrack().getInfo().title+"\n";
-			if(index>0)
-			{
-				playlistText = playlistText + "\n";
-			}
+			playlistText = "```Playlist :\n0. "+musicManager.player.getPlayingTrack().getInfo().title+"\n\n";
 			if(playlist.size() !=0)
 			{
 				for(int i = index-1 ; i<playlist.size();i++)
@@ -145,6 +143,7 @@ public class AudioManagerMotto {
 		{
 			playlistText = "```No playlist```";
 		}
+		System.out.println(playlistText);
 		return playlistText;
 	}
 
