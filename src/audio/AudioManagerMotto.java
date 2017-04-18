@@ -96,12 +96,16 @@ public class AudioManagerMotto {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		for(int i = 0; i<nbOfSkips; i++)
 		{
-		
 			musicManager.scheduler.nextTrack();
 		}
+		
 		if(musicManager.scheduler.getPlaylist().size()>0)
 		{
 			channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
+		}
+		else
+		{
+			musicManager.player.stopTrack();
 		}
 	}
 
