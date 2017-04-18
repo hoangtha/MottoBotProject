@@ -51,7 +51,7 @@ public class CmdMotto implements Commande {
 			{
 				case 0: // Yande.re
 					if(nsfwGuild) {
-						if (arguments!=null && !arguments.isEmpty() || !arguments.equalsIgnoreCase("ademage")) {
+						if (arguments!=null && !arguments.isEmpty() && !arguments.equalsIgnoreCase("ademage")) {
 							url = "https://yande.re/post?tags=order:random+" + arguments;
 						}
 						else {
@@ -66,7 +66,7 @@ public class CmdMotto implements Commande {
 					break;
 				case 1: // Konachan
 					if(nsfwGuild) {
-						if (arguments!=null && !arguments.isEmpty() || !arguments.equalsIgnoreCase("ademage")) {
+						if (arguments!=null && !arguments.isEmpty() && !arguments.equalsIgnoreCase("ademage")) {
 							url = "http://konachan.com/post?tags=order:random+" + arguments;
 						} 
 						else {
@@ -81,7 +81,7 @@ public class CmdMotto implements Commande {
 					break;
 				case 2: // Sankaku(si nsfw) ou Yande.re
 					if(nsfwGuild) {
-						if (arguments!=null && !arguments.isEmpty() || !arguments.equalsIgnoreCase("ademage")) {
+						if (arguments!=null && !arguments.isEmpty() && !arguments.equalsIgnoreCase("ademage")) {
 							url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments;
 						} 
 						else {
