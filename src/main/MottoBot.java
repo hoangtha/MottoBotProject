@@ -38,8 +38,7 @@ public class MottoBot extends ListenerAdapter
 	
 	private List<Commande> commandesValides;
 
-	// que robin + d'autre random féminin
-	public static final String DEFAULT_SEARCH = "nico_robin -monkey_d_luffy -sanji -usopp -tony_tony_chopper";
+	public static final String DEFAULT_SEARCH = "nico_robin";
 	
     private final AudioPlayerManager playerManager;
 

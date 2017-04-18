@@ -44,72 +44,88 @@ public class CmdMotto implements Commande {
 		int nbRecherche = 0;
 		Document doc;
 		String imageUrl = "";
-		 
+		
 		while(nbRecherche<3)
 		{
-			switch(selector)
+			if(arguments.toLowerCase().contains("ademage"))
 			{
-				case 0: // Yande.re
-					if(nsfwGuild) {
-						if (arguments!=null && !arguments.isEmpty() && !arguments.equalsIgnoreCase("ademage")) {
-							url = "https://yande.re/post?tags=order:random+" + arguments;
+				if(e.getAuthor().getId().equals("259789587432341506")) {
+					selector = 2;
+					url = "https://chan.sankakucomplex.com/?tags=order:random+nico_robin+solo+-rating:explicit";
+				}
+				else {
+					e.getChannel().sendMessage("no").queue();
+					return;
+				}
+			}
+			else {
+				switch(selector)
+				{
+					case 0: // Yande.re
+						if(nsfwGuild) {
+							if (arguments!=null && !arguments.isEmpty()) {
+								url = "https://yande.re/post?tags=order:random+" + arguments;
+							}
+							else {
+								url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+							}
 						}
 						else {
-							url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+							url = "https://yande.re/post?tags=order:random+rating:safe";
+							if (arguments!=null && !arguments.isEmpty())
+								url += "+" + arguments;
 						}
-					}
-					else {
-						url = "https://yande.re/post?tags=order:random+rating:safe";
-						if (arguments!=null && !arguments.isEmpty())
-							url += "+" + arguments;
-					}
-					break;
-				case 1: // Konachan
-					if(nsfwGuild) {
-						if (arguments!=null && !arguments.isEmpty() && !arguments.equalsIgnoreCase("ademage")) {
-							url = "http://konachan.com/post?tags=order:random+" + arguments;
-						} 
+						break;
+					case 1: // Konachan
+						if(nsfwGuild) {
+							if (arguments!=null && !arguments.isEmpty()) {
+								url = "http://konachan.com/post?tags=order:random+" + arguments;
+							} 
+							else {
+								url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+							}
+						}
 						else {
-							url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+							url = "http://konachan.net/post?tags=order:random";
+							if (arguments!=null && !arguments.isEmpty())
+								url += "+" + arguments;
 						}
-					}
-					else {
-						url = "http://konachan.net/post?tags=order:random";
-						if (arguments!=null && !arguments.isEmpty())
-							url += "+" + arguments;
-					}
-					break;
-				case 2: // Sankaku(si nsfw) ou Yande.re
-					if(nsfwGuild) {
-						if (arguments!=null && !arguments.isEmpty() && !arguments.equalsIgnoreCase("ademage")) {
-							url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments;
-						} 
+						break;
+					case 2: // Sankaku(si nsfw) ou Yande.re
+						if(nsfwGuild) {
+							if (arguments!=null && !arguments.isEmpty()) {
+								url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments;
+							}
+							else {
+								url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+							}
+						}
 						else {
-							url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
+							url = "https://yande.re/post?tags=order:random+rating:safe";
+							selector = 0;
+							if (arguments!=null && !arguments.isEmpty())
+								url += "+" + arguments;
 						}
-					}
-					else {
-						url = "https://yande.re/post?tags=order:random+rating:safe";
-						if (arguments!=null && !arguments.isEmpty())
-							url += "+" + arguments;
-					}
-					break;
-				default:
-					break;
+						break;
+					default:
+						break;
+				}
 			}
 			
 			try
 			{
 				doc = Jsoup.connect(url).get();
+				
 				if (selector != 2)
 				{
 					imageUrl = doc.select("span[class=plid]").stream().findAny().map(docs -> docs.html())
 							.orElse(null).substring(4);
-				} else
+				} 
+				else
 				{
+					int selectedA = CmdMotto.rand.nextInt(doc.select("span[class=thumb blacklisted] > a").size());
 					imageUrl = "https://chan.sankakucomplex.com"
-							+ doc.select("span[class=thumb blacklisted]").stream().findAny()
-									.map(docs -> docs.html()).orElse(null).substring(9, 27).replace("\"", "");
+							+ doc.select("span[class=thumb blacklisted] > a").get(selectedA).attr("href");
 				}
 
 				doc = Jsoup.connect(imageUrl).get();
@@ -120,6 +136,7 @@ public class CmdMotto implements Commande {
 			{
 				doc = null;
 				imageUrl = null;
+				err.printStackTrace();
 			} 
 
 			if (imageUrl != null)
@@ -138,7 +155,6 @@ public class CmdMotto implements Commande {
 					{
 						e.getChannel().sendMessage(imageUrl).queue();
 					}
-
 				}
 				System.out.println(e.getAuthor().getName() + " " + arguments +" : " + imageUrl);
 				break;

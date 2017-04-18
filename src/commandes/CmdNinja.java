@@ -45,7 +45,6 @@ public class CmdNinja implements Commande {
 					if(m.getAuthor().getName()==me.getName() || m.getContent().startsWith("=")) {
 						mbot.add(m.getId());
 						oldest = m.getCreationTime();
-						System.out.println(oldest);
 					}
 				}
 			}
