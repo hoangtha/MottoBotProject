@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import main.MottoBot;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -123,9 +124,16 @@ public class CmdMotto implements Commande {
 				} 
 				else
 				{
-					int selectedA = CmdMotto.rand.nextInt(doc.select("span[class=thumb blacklisted] > a").size());
-					imageUrl = "https://chan.sankakucomplex.com"
-							+ doc.select("span[class=thumb blacklisted] > a").get(selectedA).attr("href");
+					Elements elems = doc.select("span[class=thumb blacklisted] > a");
+					if(elems.size()>0) {
+						int selectedA = CmdMotto.rand.nextInt(elems.size());
+						imageUrl = "https://chan.sankakucomplex.com"
+								+ elems.get(selectedA).attr("href");
+					}
+					else {
+						doc = null;
+						imageUrl = null;
+					}
 				}
 
 				doc = Jsoup.connect(imageUrl).get();
@@ -136,7 +144,6 @@ public class CmdMotto implements Commande {
 			{
 				doc = null;
 				imageUrl = null;
-				err.printStackTrace();
 			} 
 
 			if (imageUrl != null)
