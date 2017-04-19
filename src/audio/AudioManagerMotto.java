@@ -117,8 +117,7 @@ public class AudioManagerMotto {
 	public void clearQueue(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		musicManager.player.stopTrack();
-		for(int i = 0; i<musicManager.scheduler.getPlaylist().size(); i++)
-			musicManager.scheduler.nextTrack();
+		musicManager.scheduler.clearPlaylist();
 	}
 	
 	public String showPlaylist(TextChannel channel, MottoBot bot, int index) {
@@ -147,7 +146,7 @@ public class AudioManagerMotto {
 		{
 			playlistText = "```No playlist```";
 		}
-		System.out.println(playlistText);
+		//System.out.println(playlistText);
 		return playlistText;
 	}
 

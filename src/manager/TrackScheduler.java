@@ -74,14 +74,20 @@ public class TrackScheduler extends AudioEventAdapter {
 		// or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply
 		// stop the player.
-		if(this.queue.size() > 0)
+
+		this.player.startTrack(this.queue.poll(), false);
+		if(this.playlist.size()!=0)
 		{
-			this.player.startTrack(this.queue.poll(), false);
-			if(this.playlist.size()!=0)
-			{
-				this.playlist.remove(0);
-			}
+			this.playlist.remove(0);
 		}
+		
+	}
+	
+	public void clearPlaylist()
+	{
+		this.queue.clear();
+		this.playlist.clear();
+		this.player.startTrack(this.queue.poll(), false);
 	}
 
 	@Override
