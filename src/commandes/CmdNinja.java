@@ -25,10 +25,8 @@ public class CmdNinja implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		OffsetDateTime oldest = e.getMessage().getCreationTime();
-		System.out.println(oldest);
 		OffsetDateTime twoDaysAgo = OffsetDateTime.now();
 		twoDaysAgo = twoDaysAgo.minusDays(2);
-		System.out.println(twoDaysAgo);
 		e.getMessage().delete().queue();
 		SelfUser me = bot.getJda().getSelfUser();
 		MessageHistory mh = e.getChannel().getHistory();

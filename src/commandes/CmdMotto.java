@@ -135,10 +135,12 @@ public class CmdMotto implements Commande {
 						imageUrl = null;
 					}
 				}
-
-				doc = Jsoup.connect(imageUrl).get();
-				imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
-						.orElse(null);
+				
+				if(imageUrl!=null) {
+					doc = Jsoup.connect(imageUrl).get();
+					imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
+							.orElse(null);
+				}
 			} 
 			catch (IOException | NullPointerException err)
 			{
