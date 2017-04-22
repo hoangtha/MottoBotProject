@@ -75,7 +75,7 @@ public class CmdStats implements Commande {
 					eb.setColor(up.titleColor);
 					eb.appendDescription(up.title);
 				}
-				eb.addField("Niveau", up.level+" ("+up.experience+"/"+UserProgress.requiredXP(up.level)+")", true);
+				eb.addField("Niveau", up.level+" ("+up.experience+"/"+UserProgress.requiredXP(up.level+(up.prestige*100))+")", true);
 				eb.addField("Prestige", up.prestige+"★", true);
 				eb.addBlankField(false);
 				eb.addField("Messages", up.messages+"", true);
