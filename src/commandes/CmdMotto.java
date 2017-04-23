@@ -36,7 +36,7 @@ public class CmdMotto implements Commande {
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 
-		e.getChannel().sendTyping();
+		e.getChannel().sendTyping().queue();
 		
 		boolean nsfwGuild = this.nsfwGuilds.contains(e.getGuild().getId());
 		

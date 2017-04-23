@@ -29,7 +29,7 @@ public class CmdHelp implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
-		e.getChannel().sendTyping();
+		e.getChannel().sendTyping().queue();
 		MessageBuilder mb = new MessageBuilder();
 		mb.append("```");
 		mb.append("Liste des commandes :\n");

@@ -28,7 +28,7 @@ public class CmdClearPlaylist implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
-		
+		e.getChannel().sendTyping().queue();
 		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
 		e.getChannel().sendMessage(":musical_note: Playlist clean ! :ok_hand:").queue();
 	}

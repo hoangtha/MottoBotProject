@@ -29,6 +29,7 @@ public class CmdPlay implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
+		e.getChannel().sendTyping().queue();
 		boolean rechercheFlag = false;
 		Document doc;
 		String url = "https://www.youtube.com/results?sp=EgIQAQ%253D%253D&q=" + arguments;

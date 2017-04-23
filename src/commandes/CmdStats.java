@@ -52,8 +52,8 @@ public class CmdStats implements Commande {
 			}
 			eb.addField("Messages", messages+"" , true);
 			eb.addField("Commandes", commandes+"", true);
-			eb.addField("Temps passé en ligne par tout les membres", formatDuration(tempsEnLigne), true);
-			eb.addField("Temps passé en vocal par tout les membres", formatDuration(tempsEnVocal), true);
+			eb.addField("Temps cumulé passé en ligne par tout les membres", formatDuration(tempsEnLigne), true);
+			eb.addField("Temps cumulé passé en vocal par tout les membres", formatDuration(tempsEnVocal), true);
 		}
 		else {
 			List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
