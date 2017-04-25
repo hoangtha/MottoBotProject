@@ -80,7 +80,7 @@ public class CmdMotto implements Commande {
 				}
 				if(!e.getChannel().getName().toLowerCase().contains("nsfw")) 
 				{
-					url += "+rating:safe";
+					url += "+rating:safe-rating:e";
 				}
 				url += "+" + arguments;
 			}
