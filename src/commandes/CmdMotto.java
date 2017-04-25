@@ -15,11 +15,11 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class CmdMotto implements Commande {
 	private static Random rand = new Random();
 	
-	private ArrayList<String> nsfwGuilds;
+	private ArrayList<String> robinArmy;
 	
 	public CmdMotto() {
-		this.nsfwGuilds = new ArrayList<String>();
-		this.nsfwGuilds.add("269163044427268096"); // Freaking Potatoes
+		this.robinArmy = new ArrayList<String>();
+		this.robinArmy.add("269163044427268096"); // Freaking Potatoes
 	}
 	
 	@Override
@@ -38,7 +38,7 @@ public class CmdMotto implements Commande {
 
 		e.getChannel().sendTyping().queue();
 		
-		boolean nsfwGuild = this.nsfwGuilds.contains(e.getGuild().getId());
+		boolean isFromRobinArmy = this.robinArmy.contains(e.getGuild().getId()); // sale
 		
 		int selector = CmdMotto.rand.nextInt(3);
 		String url = "";
@@ -63,54 +63,26 @@ public class CmdMotto implements Commande {
 				switch(selector)
 				{
 					case 0: // Yande.re
-						if(nsfwGuild || e.getChannel().getName().contains("nsfw")) {
-							if (arguments!=null && !arguments.isEmpty()) {
-								url = "https://yande.re/post?tags=order:random+" + arguments;
-							}
-							else {
-								url = "https://yande.re/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
-							}
-						}
-						else {
-							url = "https://yande.re/post?tags=order:random+rating:safe";
-							if (arguments!=null && !arguments.isEmpty())
-								url += "+" + arguments;
-						}
+						url = "https://yande.re/post?tags=order:random";
 						break;
-					case 1: // Konachan
-						if(nsfwGuild || e.getChannel().getName().contains("nsfw")) {
-							if (arguments!=null && !arguments.isEmpty()) {
-								url = "http://konachan.com/post?tags=order:random+" + arguments;
-							} 
-							else {
-								url = "http://konachan.com/post?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
-							}
-						}
-						else {
-							url = "http://konachan.net/post?tags=order:random";
-							if (arguments!=null && !arguments.isEmpty())
-								url += "+" + arguments;
-						}
+					case 1: // Konachan			
+						url = "http://konachan.com/post?tags=order:random";
 						break;
-					case 2: // Sankaku(si nsfw) ou Yande.re
-						if(nsfwGuild || e.getChannel().getName().contains("nsfw")) {
-							if (arguments!=null && !arguments.isEmpty()) {
-								url = "https://chan.sankakucomplex.com/?tags=order:random+" + arguments;
-							}
-							else {
-								url = "https://chan.sankakucomplex.com/?tags=order:random+" + MottoBot.DEFAULT_SEARCH;
-							}
-						}
-						else {
-							url = "https://yande.re/post?tags=order:random+rating:safe";
-							selector = 0;
-							if (arguments!=null && !arguments.isEmpty())
-								url += "+" + arguments;
-						}
+					case 2: // chan.sankaku
+						url = "https://chan.sankakucomplex.com/?tags=order:random";
 						break;
 					default:
 						break;
 				}
+				if(isFromRobinArmy && arguments=="")
+				{
+					url += "+" + MottoBot.DEFAULT_SEARCH;
+				}
+				if(!e.getChannel().getName().toLowerCase().contains("nsfw")) 
+				{
+					url += "+rating:safe";
+				}
+				url += "+" + arguments;
 			}
 			
 			try
@@ -177,7 +149,7 @@ public class CmdMotto implements Commande {
 			
 			if(nbRecherche==3)
 			{
-				e.getChannel().sendMessage("ouin ouin, marche pas...").queue();
+				e.getChannel().sendMessage("ouin ouin, marche pas... <@"+e.getAuthor().getId()+">").queue();
 			}
 		}
 	}
