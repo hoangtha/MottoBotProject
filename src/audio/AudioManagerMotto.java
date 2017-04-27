@@ -102,10 +102,6 @@ public class AudioManagerMotto {
 		{
 			channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
 		}
-		else
-		{
-			musicManager.player.stopTrack();
-		}
 	}
 
 	public static void connectToVoiceChannel(AudioManager audioManager, VoiceChannel vChannel) {
