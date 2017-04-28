@@ -274,8 +274,8 @@ public class TallyCounter extends ListenerAdapter {
 		
 		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
 		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
-		up.messages++;
 		if(this.lastMessage.get(guildId+":"+userId)==null || OffsetDateTime.now().isAfter(this.lastMessage.get(guildId+":"+userId).plusSeconds(1))) {
+			up.messages++;
 			this.lastMessage.put(guildId+":"+userId, OffsetDateTime.now());
 			up.rewardMessageExperience(event.getMessage().getContent().length());
 		}
