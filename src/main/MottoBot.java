@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -142,6 +144,14 @@ public class MottoBot extends ListenerAdapter
 				this.tallyCounter.checkLevelUpForEveryone();
 				System.out.println("Vérification des level up terminée!");
 			}
+			else if (cmd.startsWith("msg")) //Histoire de notifier tlm avec un message.
+			{
+				for(Guild g : this.jda.getGuilds())
+				{
+					g.getTextChannels().get(0).sendMessage("Salut").queue();
+				}
+				
+			}
 		}
 		scanner.close();
 	}
@@ -156,6 +166,32 @@ public class MottoBot extends ListenerAdapter
 		else if (event.getMessage().getAuthor().isBot())
 		{
 			return;
+		}
+		else if (event.getMessage().getContent().contains("Motto bot"))
+		{
+			event.getChannel().sendTyping().queue();
+			Random rand = new Random();
+			int randomizedMsgIndex = rand.nextInt(4);
+			String msg = "";
+			switch (randomizedMsgIndex)
+			{
+			case 0 :
+				msg = "vous voulez quoi les pédé ?";
+				break;
+			case 1 :
+				msg = "waa, m'appelle pas comme ça, t'es fou";
+				break;
+			case 2 :
+				msg = "je suis pas venu ici pour souffir, ok ?";
+				break;
+			case 3 :
+				msg = "koi?";
+				break;
+			default:
+				msg = "???????";
+				break;
+			}
+			event.getChannel().sendMessage(msg).queue();
 		}
 		
 		Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
