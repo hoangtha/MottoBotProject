@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -33,10 +34,12 @@ public class TallyCounter extends ListenerAdapter {
 	private String pathProgress;
 	private ArrayList<String> activeGuilds;
 	private MottoBot bot;
+	private Hashtable<String, OffsetDateTime> lastMessage;
 	
 	@SuppressWarnings("unchecked")
 	public TallyCounter(MottoBot bot, String pathProgress) {
 		this.pathProgress = pathProgress;
+		this.lastMessage = new Hashtable<String, OffsetDateTime>();
 		this.activeGuilds = new ArrayList<String>();
 		this.activeGuilds.add("269163044427268096");// FP
 		this.activeGuilds.add("228161553986355212");// Ehreon
@@ -272,7 +275,10 @@ public class TallyCounter extends ListenerAdapter {
 		Hashtable<String, UserProgress> guildTable = this.userProgress.getOrDefault(guildId, new Hashtable<String, UserProgress>());
 		UserProgress up = guildTable.getOrDefault(userName, new UserProgress(guildId, userId, name, discriminator));
 		up.messages++;
-		up.rewardMessageExperience(event.getMessage().getContent().length());
+		if(this.lastMessage.get(guildId+":"+userId)==null || OffsetDateTime.now().isAfter(this.lastMessage.get(guildId+":"+userId).plusSeconds(1))) {
+			this.lastMessage.put(guildId+":"+userId, OffsetDateTime.now());
+			up.rewardMessageExperience(event.getMessage().getContent().length());
+		}
 		checkLevelUp(up, guildId);
 		guildTable.putIfAbsent(userName, up);
 		this.userProgress.putIfAbsent(guildId, guildTable);
@@ -353,5 +359,14 @@ public class TallyCounter extends ListenerAdapter {
 		checkLevelUp(up, guildId);
 		guildTable.putIfAbsent(userName, up);
 		this.userProgress.putIfAbsent(guildId, guildTable);
+	}
+
+	public void fixExp() {
+		for(Hashtable<String, UserProgress> guildTable : this.userProgress.values()) {
+			for(UserProgress up : guildTable.values()) {
+				// No fix
+				up.rewardExperience(0);
+			}
+		}
 	}
 }

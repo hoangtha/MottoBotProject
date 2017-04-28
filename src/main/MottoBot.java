@@ -144,6 +144,14 @@ public class MottoBot extends ListenerAdapter
 				this.tallyCounter.checkLevelUpForEveryone();
 				System.out.println("Vérification des level up terminée!");
 			}
+			else if (cmd.equalsIgnoreCase("fixExp"))
+			{
+				//System.out.println("Correction XP...");
+				//this.tallyCounter.fixExp();
+				System.out.println("Vérification des level up...");
+				this.tallyCounter.checkLevelUpForEveryone();
+				System.out.println("Vérification des level up terminée!");
+			}
 			else if (cmd.startsWith("msg")) //Histoire de notifier tlm avec un message.
 			{
 				for(Guild g : this.jda.getGuilds())
@@ -167,32 +175,6 @@ public class MottoBot extends ListenerAdapter
 		{
 			return;
 		}
-		else if (event.getMessage().getContent().contains("Motto bot"))
-		{
-			event.getChannel().sendTyping().queue();
-			Random rand = new Random();
-			int randomizedMsgIndex = rand.nextInt(4);
-			String msg = "";
-			switch (randomizedMsgIndex)
-			{
-			case 0 :
-				msg = "vous voulez quoi les pédé ?";
-				break;
-			case 1 :
-				msg = "waa, m'appelle pas comme ça, t'es fou";
-				break;
-			case 2 :
-				msg = "je suis pas venu ici pour souffir, ok ?";
-				break;
-			case 3 :
-				msg = "koi?";
-				break;
-			default:
-				msg = "???????";
-				break;
-			}
-			event.getChannel().sendMessage(msg).queue();
-		}
 		
 		Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = commandPattern.matcher(event.getMessage().getContent());
@@ -204,6 +186,32 @@ public class MottoBot extends ListenerAdapter
         }
 		else {
 			// Message lambda
+			if (event.getMessage().getContent().contains("Motto bot"))
+			{
+				event.getChannel().sendTyping().queue();
+				Random rand = new Random();
+				int randomizedMsgIndex = rand.nextInt(4);
+				String msg = "";
+				switch (randomizedMsgIndex)
+				{
+				case 0 :
+					msg = "vous voulez quoi les pédé ?";
+					break;
+				case 1 :
+					msg = "waa, m'appelle pas comme ça, t'es fou";
+					break;
+				case 2 :
+					msg = "je suis pas venu ici pour souffir, ok ?";
+					break;
+				case 3 :
+					msg = "koi?";
+					break;
+				default:
+					msg = "???????";
+					break;
+				}
+				event.getChannel().sendMessage(msg).queue();
+			}
 		}
 	}
 	

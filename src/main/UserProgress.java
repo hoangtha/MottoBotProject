@@ -9,10 +9,10 @@ import java.util.Hashtable;
 public class UserProgress implements Serializable {
 	private static final long serialVersionUID = 42L;
 
-	private static final int COMMAND_VALUE = 75;
+	private static final int COMMAND_VALUE = 120;
 	private static final int ONLINE_TIME_MULT = 1;
 	private static final int VOCAL_TIME_MULT = 2;
-	private static final int MESSAGE_VALUE = 225;
+	private static final int MESSAGE_VALUE = 360;
 	private static final int BASE_EXP = 500;
 	
 	public String guildId;
@@ -82,7 +82,7 @@ public class UserProgress implements Serializable {
 	}
 	
 	public void rewardMessageExperience(int messageLength) {
-		this.experience += MESSAGE_VALUE * Math.min(1.0, (float)messageLength/16.0);
+		this.experience += MESSAGE_VALUE * Math.min(1.0, (float)messageLength/10.0);
 	}
 	
 	public void rewardCommandExperience() {
