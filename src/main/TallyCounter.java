@@ -113,10 +113,16 @@ public class TallyCounter extends ListenerAdapter {
 	protected void checkLevelUpForEveryone() {
 		ArrayList<UserProgress> events = new ArrayList<UserProgress>();
 		for(String guildId : this.activeGuilds) {
+			if(this.bot.getJda().getGuildById(guildId)==null) {
+				continue;
+			}
 			Hashtable<String, UserProgress> guildTable = this.userProgress.get(guildId);
 			if(guildTable==null)
 				continue;
 			for(UserProgress up : guildTable.values()) {
+				if(this.bot.getJda().getGuildById(guildId).getMemberById(up.userId)==null) {
+					continue;
+				}
 				int lvlUps = up.checkLevelUp();
 				if(lvlUps>0)
 					events.add(up);
@@ -128,14 +134,6 @@ public class TallyCounter extends ListenerAdapter {
 					mb.setColor(new Color(200,50,50));
 					mb.setTitle("LEVEL UP !", null);
 					for(UserProgress up:events) {
-						if(this.bot.getJda().getGuildById(up.guildId)==null) {
-							System.err.println("Plus dans cette guilde ! :(");
-							continue;
-						}
-						else if(this.bot.getJda().getGuildById(up.guildId).getMemberById(up.userId)==null) {
-							System.err.println("J'ai perdu quelqu'un ! :(");
-							continue;
-						}						
 						String effName = this.bot.getJda().getGuildById(up.guildId).getMemberById(up.userId).getEffectiveName();
 						int newLevel = up.level+up.checkLevelUp();
 						int newPrestige = up.prestige;

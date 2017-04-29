@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -34,6 +35,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class MottoBot extends ListenerAdapter
 {
 	// https://discordapp.com/oauth2/authorize?client_id=282539502818426892&scope=bot&permissions=-1
+	private Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
+	
 	private JDA jda;
 
 	private List<Message> msgTab;
@@ -113,9 +116,20 @@ public class MottoBot extends ListenerAdapter
 	private void run() {
 		boolean stop = false;
 		Scanner scanner = new Scanner(System.in);
+		Pattern patternCmd = Pattern.compile("^([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
+		Pattern patternArgsMsg = Pattern.compile("^\"([^\"]+)\" \"([^\"]+)\" (.*)", Pattern.CASE_INSENSITIVE); // Guilde Channel Message
+		String cmd;
+		String arguments;
 		while (!stop)
 		{
-			String cmd = scanner.next();
+			String line = scanner.nextLine();
+			cmd = "dummy";
+			arguments = null;
+			Matcher matcher = patternCmd.matcher(line);
+	        if (matcher.matches()) {
+	        	cmd = matcher.group(1);
+	        	arguments = matcher.group(2).isEmpty() ? null : matcher.group(2);
+	        }
 			if (cmd.equalsIgnoreCase("stop"))
 			{
 				System.out.println("Arrêt demandé");
@@ -152,13 +166,38 @@ public class MottoBot extends ListenerAdapter
 				this.tallyCounter.checkLevelUpForEveryone();
 				System.out.println("Vérification des level up terminée!");
 			}
-			else if (cmd.startsWith("msg")) //Histoire de notifier tlm avec un message.
+			else if (cmd.equalsIgnoreCase("msg")) //Histoire de notifier tlm avec un message.
 			{
-				for(Guild g : this.jda.getGuilds())
-				{
-					g.getTextChannels().get(0).sendMessage("Salut").queue();
+				String guildName;
+				String channelName;
+				String msg;
+				Matcher matcherMsg = patternArgsMsg.matcher(arguments);
+		        if (matcherMsg.matches()) {
+		        	guildName = matcherMsg.group(1);
+		        	channelName = matcherMsg.group(2);
+		        	msg = matcherMsg.group(3).isEmpty() ? "Salut" : matcherMsg.group(3);
+		        	
+					List<Guild> guilds = this.jda.getGuildsByName(guildName, true);
+					if(!guilds.isEmpty())
+					{
+						Guild g = guilds.get(0);
+						List<TextChannel> channels = g.getTextChannelsByName(channelName, true);
+						if(!channels.isEmpty())
+						{
+							TextChannel c = channels.get(0);
+							c.sendMessage(msg).queue();
+						}
+						else {
+							System.err.println("Canal inconnu");
+						}
+					}
+					else {
+						System.err.println("Guilde inconnue");
+					}
 				}
-				
+		        else {
+		        	System.err.println("msg \"nomGuilde\" \"nomChannel\" message");
+		        }
 			}
 		}
 		scanner.close();
@@ -176,7 +215,6 @@ public class MottoBot extends ListenerAdapter
 			return;
 		}
 		
-		Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = commandPattern.matcher(event.getMessage().getContent());
         if (matcher.matches()) {
         	// Potentielle commande
@@ -186,7 +224,7 @@ public class MottoBot extends ListenerAdapter
         }
 		else {
 			// Message lambda
-			if (event.getMessage().getContent().contains("Motto bot"))
+			if (event.getMessage().getContent().toLowerCase().contains("Motto bot"))
 			{
 				event.getChannel().sendTyping().queue();
 				Random rand = new Random();
