@@ -224,7 +224,7 @@ public class MottoBot extends ListenerAdapter
         }
 		else {
 			// Message lambda
-			if (event.getMessage().getContent().toLowerCase().contains("Motto bot"))
+			if (event.getMessage().getContent().toLowerCase().contains("motto bot"))
 			{
 				event.getChannel().sendTyping().queue();
 				Random rand = new Random();
