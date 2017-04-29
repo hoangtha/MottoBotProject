@@ -215,7 +215,7 @@ public class MottoBot extends ListenerAdapter
 			return;
 		}
 		
-		Matcher matcher = commandPattern.matcher(event.getMessage().getContent());
+		Matcher matcher = this.commandPattern.matcher(event.getMessage().getContent());
         if (matcher.matches()) {
         	// Potentielle commande
         	String commande = matcher.group(1).toLowerCase();
