@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -10,9 +11,19 @@ import org.jsoup.select.Elements;
 
 import main.MottoBot;
 import main.MottoThread;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class MottoThread implements Runnable {
+	private static final int YANDERE = 0;
+	private static final int KONACHAN = 1;
+	private static final int SANKAKU = 2;
+	private static final int MAX_TRIES = 3; // Nombre maximal de recherches
+	private static final int NB_SEL = 3; // Nombre de sites sur lesquels on peut rechercher
+	public static final Color EXPLICIT = new Color(255, 20, 147);
+	public static final Color SAFE = new Color(0, 136, 204);
+	public static final Color QUESTIONABLE = new Color(255, 165, 0);
+	
 	private Random rand;
 	
 	private ArrayList<String> robinArmy;
@@ -34,21 +45,23 @@ public class MottoThread implements Runnable {
 		this.e.getChannel().sendTyping().queue();
 		
 		boolean isFromRobinArmy = this.robinArmy.contains(this.e.getGuild().getId()); // sale
+		boolean channelIsNSFW = this.e.getChannel().getName().toLowerCase().contains("nsfw");
 		
 		int selector = this.rand.nextInt(3);
-		String url = "";
 		int nbRecherche = 0;
 		Document doc;
-		String imageUrl = "";
+		String searchUrl = null;
+		String pageUrl = null;
+		String imageUrl = null;
 		
-		while(nbRecherche<3)
+		while(nbRecherche<MAX_TRIES)
 		{
 			if(this.arguments.toLowerCase().contains("ademage"))
 			{
 				if(this.e.getAuthor().getId().equals("259789587432341506")) {
-					selector = 2;
-					nbRecherche = 2;
-					url = "https://chan.sankakucomplex.com/?tags=order:random+nico_robin+solo+-rating:explicit";
+					selector = SANKAKU;
+					nbRecherche = MAX_TRIES-1;
+					searchUrl = "https://chan.sankakucomplex.com/?tags=order:random+nico_robin+solo+-rating:explicit";
 				}
 				else {
 					this.e.getChannel().sendMessage("no").queue();
@@ -58,96 +71,130 @@ public class MottoThread implements Runnable {
 			else {
 				switch(selector)
 				{
-					case 0: // Yande.re
-						url = "https://yande.re/post?tags=order:random";
+					case YANDERE: // Yande.re
+						searchUrl = "https://yande.re/post?tags=order:random";
 						break;
-					case 1: // Konachan			
-						url = "http://konachan.com/post?tags=order:random";
+					case KONACHAN: // Konachan			
+						searchUrl = "http://konachan.com/post?tags=order:random";
 						break;
-					case 2: // chan.sankaku
-						url = "https://chan.sankakucomplex.com/?tags=order:random";
+					case SANKAKU: // chan.sankaku
+						searchUrl = "https://chan.sankakucomplex.com/?tags=order:random";
 						break;
 					default:
 						break;
 				}
-				if(isFromRobinArmy && this.arguments=="")
-				{
-					url += "+" + MottoBot.DEFAULT_SEARCH;
+				
+				if(this.arguments==null || this.arguments=="") { // Pas d'arguments
+					if(isFromRobinArmy) // Tag par défaut
+					{
+						searchUrl += "+" + MottoBot.DEFAULT_SEARCH;
+					}
 				}
-				if(!this.e.getChannel().getName().toLowerCase().contains("nsfw")) 
-				{
-					url += "+rating:safe-rating:e";
+				else {
+					searchUrl += "+" + this.arguments;
 				}
-				url += "+" + this.arguments;
+				
+				if(channelIsNSFW==false)  // Si le salon n'est pas NSFW, restreindre le contenu
+				{
+					searchUrl += "+rating:safe-rating:e";
+				}
 			}
 			
 			try
 			{
-				doc = Jsoup.connect(url).get();
+				doc = Jsoup.connect(searchUrl).get();
 				
-				if (selector != 2)
-				{
-					imageUrl = doc.select("span[class=plid]").stream().findAny().map(docs -> docs.html())
-							.orElse(null).substring(4);
-				} 
-				else
+				if (selector==SANKAKU)
 				{
 					Elements elems = doc.select("span[class=thumb blacklisted] > a");
 					if(elems.size()>0) {
 						int selectedA = this.rand.nextInt(elems.size());
-						imageUrl = "https://chan.sankakucomplex.com"
+						pageUrl = "https://chan.sankakucomplex.com"
 								+ elems.get(selectedA).attr("href");
 					}
 					else {
-						doc = null;
-						imageUrl = null;
+						pageUrl = null;
 					}
+				} 
+				else
+				{
+					pageUrl = doc.select("span[class=plid]").stream().findAny().map(docs -> docs.html())
+							.orElse(null).substring(4);
 				}
 				
-				if(imageUrl!=null) {
-					doc = Jsoup.connect(imageUrl).get();
+				if(pageUrl!=null) {
+					doc = Jsoup.connect(pageUrl).get();
+					
 					imageUrl = doc.select("img[id=image]").stream().findFirst().map(docs -> docs.attr("src").trim())
 							.orElse(null);
 				}
-			} 
+				else {
+					doc = null;
+					imageUrl = null;
+				}
+			}
 			catch (IOException | NullPointerException err)
 			{
 				doc = null;
+				pageUrl = null;
 				imageUrl = null;
 			} 
 
 			if (imageUrl != null)
 			{
-				if (selector == 0)
+				EmbedBuilder eb = new EmbedBuilder();
+				
+				String title = this.arguments;
+				if(this.arguments==null || this.arguments=="") {
+					title = "Motto !";
+				}
+				
+				if(channelIsNSFW) {
+					eb.setTitle(title, pageUrl);
+					eb.setColor(EXPLICIT);
+				}
+				else {
+					eb.setTitle(title, null);
+					eb.setColor(SAFE);
+				}
+				
+				eb.setDescription("Demandé par " + this.e.getMember().getEffectiveName());
+				
+				if (selector==YANDERE)
 				{
-					this.e.getChannel().sendMessage(imageUrl).queue();
+					eb.setImage(imageUrl);
 				} 
 				else
 				{
 					if (imageUrl.startsWith("//"))
 					{
-						this.e.getChannel().sendMessage("https:" + imageUrl).queue();
+						eb.setImage("https:" + imageUrl);
 					} 
 					else
 					{
-						this.e.getChannel().sendMessage(imageUrl).queue();
+						eb.setImage(imageUrl);
 					}
 				}
+				
+				this.e.getChannel().sendMessage(eb.build()).queue();
 				System.out.println(this.e.getAuthor().getName() + " " + this.arguments +" : " + imageUrl);
 				break;
-			} 
+			}
 			else
 			{
 				System.out.println("Erreur recherche sur " + selector);
-				selector = (selector + 1)%3;
+				selector = (selector + 1)%NB_SEL;
 				nbRecherche++;
 			}
 			
-			if(nbRecherche==3)
+			if(nbRecherche>=MAX_TRIES)
 			{
-				this.e.getChannel().sendMessage("ouin ouin, marche pas... <@"+this.e.getAuthor().getId()+">").queue();
+				this.messageErreur();
 			}
 		}
 	}
 
+	private void messageErreur() {
+		this.e.getChannel().sendMessage("ouin ouin, marche pas... <@"+this.e.getAuthor().getId()+">").queue();
+	}
 }
