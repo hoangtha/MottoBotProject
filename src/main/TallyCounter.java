@@ -110,7 +110,7 @@ public class TallyCounter extends ListenerAdapter {
 		}
 	}
 
-	protected void checkLevelUpForEveryone() {
+	public void checkLevelUpForEveryone() {
 		ArrayList<UserProgress> events = new ArrayList<UserProgress>();
 		for(String guildId : this.activeGuilds) {
 			if(this.bot.getJda().getGuildById(guildId)==null) {

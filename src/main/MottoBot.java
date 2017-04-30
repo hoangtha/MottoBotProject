@@ -1,12 +1,13 @@
 package main;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,14 +20,15 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import audio.AudioManagerMotto;
 import audio.GuildMusicManager;
+import commandes.CmdStats;
 import commandes.Commande;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -52,11 +54,19 @@ public class MottoBot extends ListenerAdapter
 	private AudioManagerMotto properAudioManager;
 	
 	private TallyCounter tallyCounter;
+	
+	private Instant startTime;
+
+	private boolean stop;
+
+	private String token;
 
 	public MottoBot(String token)
 	{
+		this.token = token;
 		this.msgTab = new ArrayList<Message>();
 		this.commandesValides = new ArrayList<Commande>();
+		this.startTime = Instant.now();
 		
 		try {
 			this.jda = new JDABuilder(AccountType.BOT).setToken(token).setBulkDeleteSplittingEnabled(false).buildBlocking();
@@ -67,6 +77,9 @@ public class MottoBot extends ListenerAdapter
 		System.out.println("Connecté avec: " + this.jda.getSelfUser().getName());
 		int nbServeurs = this.jda.getGuilds().size();
 		System.out.println("Le bot est autorisé sur " + nbServeurs + " serveur" + (nbServeurs > 1 ? "s" : ""));
+		for(Guild g:this.jda.getGuilds()) {
+			System.out.println("\t"+g.getName());
+		}
 		this.jda.getPresence().setGame(Game.of("=motto"));
 		
 		this.musicManagers = new HashMap<>();
@@ -78,11 +91,30 @@ public class MottoBot extends ListenerAdapter
 		this.properAudioManager = new AudioManagerMotto(); 
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws InterruptedException
 	{
 		if(args.length<1) {
 			System.out.println("Il faut un token pour lancer le bot !");
 			System.exit(1);
+		}
+		if(args.length>1) {
+			int sec;
+			try {
+				sec = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sec = 5;
+				e.printStackTrace();
+			}
+
+			System.out.println("Lancement dans " + sec + " secondes.");
+			
+			try {
+				Thread.sleep(1000*sec);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			System.out.println("Lancement !");
 		}
 		MottoBot m = new MottoBot(args[0]);
 		m.registerCommands();
@@ -112,95 +144,27 @@ public class MottoBot extends ListenerAdapter
             }
         });
     }
+
+	public void setStop(boolean stop) {
+		this.stop = stop;
+	}
 	
 	private void run() {
-		boolean stop = false;
-		Scanner scanner = new Scanner(System.in);
-		Pattern patternCmd = Pattern.compile("^([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
-		Pattern patternArgsMsg = Pattern.compile("^\"([^\"]+)\" \"([^\"]+)\" (.*)", Pattern.CASE_INSENSITIVE); // Guilde Channel Message
-		String cmd;
-		String arguments;
-		while (!stop)
+		this.stop = false;
+
+		while (!this.stop)
 		{
-			String line = scanner.nextLine();
-			cmd = "dummy";
-			arguments = null;
-			Matcher matcher = patternCmd.matcher(line);
-	        if (matcher.matches()) {
-	        	cmd = matcher.group(1);
-	        	arguments = matcher.group(2).isEmpty() ? null : matcher.group(2);
-	        }
-			if (cmd.equalsIgnoreCase("stop"))
-			{
-				System.out.println("Arrêt demandé");
-				this.tallyCounter.saveToFile();
-				this.jda.shutdown(true);
-				stop = true;
-			}
-			else if (cmd.equalsIgnoreCase("regCmd"))
-			{
-				System.out.println("Recherche de commandes");
-				this.registerCommands();
-				System.out.println("Recherche terminée");
-			}
-			else if (cmd.equalsIgnoreCase("forceSave"))
-			{
-				if(this.tallyCounter.saveToFile()) {
-					System.out.println("Sauvegarde terminée.");
-				} 
-				else {
-					System.out.println("Erreur de sauvegarde.");
-				}
-			}
-			else if (cmd.equalsIgnoreCase("checkLevelUp"))
-			{
-				System.out.println("Vérification des level up...");
-				this.tallyCounter.checkLevelUpForEveryone();
-				System.out.println("Vérification des level up terminée!");
-			}
-			else if (cmd.equalsIgnoreCase("fixExp"))
-			{
-				//System.out.println("Correction XP...");
-				//this.tallyCounter.fixExp();
-				System.out.println("Vérification des level up...");
-				this.tallyCounter.checkLevelUpForEveryone();
-				System.out.println("Vérification des level up terminée!");
-			}
-			else if (cmd.equalsIgnoreCase("msg")) //Histoire de notifier tlm avec un message.
-			{
-				String guildName;
-				String channelName;
-				String msg;
-				Matcher matcherMsg = patternArgsMsg.matcher(arguments);
-		        if (matcherMsg.matches()) {
-		        	guildName = matcherMsg.group(1);
-		        	channelName = matcherMsg.group(2);
-		        	msg = matcherMsg.group(3).isEmpty() ? "Salut" : matcherMsg.group(3);
-		        	
-					List<Guild> guilds = this.jda.getGuildsByName(guildName, true);
-					if(!guilds.isEmpty())
-					{
-						Guild g = guilds.get(0);
-						List<TextChannel> channels = g.getTextChannelsByName(channelName, true);
-						if(!channels.isEmpty())
-						{
-							TextChannel c = channels.get(0);
-							c.sendMessage(msg).queue();
-						}
-						else {
-							System.err.println("Canal inconnu");
-						}
-					}
-					else {
-						System.err.println("Guilde inconnue");
-					}
-				}
-		        else {
-		        	System.err.println("msg \"nomGuilde\" \"nomChannel\" message");
-		        }
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
-		scanner.close();
+		
+		System.out.println("Arrêt.");
+		
+		this.tallyCounter.saveToFile();
+		this.jda.shutdown(true);
 	}
 
 	@Override
@@ -259,7 +223,9 @@ public class MottoBot extends ListenerAdapter
                 .findAny();
         if (commande.isPresent()) {
         	// La commande existe
-        	this.tallyCounter.onCommandUse(e, commande.get());
+        	if(e.getChannelType()==ChannelType.TEXT) {
+        		this.tallyCounter.onCommandUse(e, commande.get());
+        	}
         	commande.get().run(this, e, arguments);
         } else {
         	// Commande inconnue
@@ -296,5 +262,22 @@ public class MottoBot extends ListenerAdapter
 	
 	public AudioManagerMotto getProperAudioManager() {
 		return this.properAudioManager;
+	}
+
+	public List<String> admins() {
+		ArrayList<String> list = new ArrayList<String>();
+		list.add("262610896545644554"); // Momojean
+		list.add("269162033855856650"); // Wylentar
+		return list;
+	}
+
+	public String getUptime() {
+		Duration d = Duration.between(this.startTime, Instant.now());
+		String uptime = CmdStats.formatDuration(d);
+		return uptime;
+	}
+
+	public String getToken() {
+		return this.token;
 	}
 }

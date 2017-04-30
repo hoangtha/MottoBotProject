@@ -95,7 +95,7 @@ public class CmdStats implements Commande {
 		}
 	}
 
-	private static String formatDuration(Duration d) {
+	public static String formatDuration(Duration d) {
 		String res;
 		
 		long jours = d.toDays();
@@ -107,5 +107,4 @@ public class CmdStats implements Commande {
 		
 		return res;
 	}
-
 }
