@@ -61,11 +61,7 @@ public class MottoThread implements Runnable {
 				if(this.e.getAuthor().getId().equals("259789587432341506")) {
 					selector = SANKAKU;
 					nbRecherche = MAX_TRIES-1;
-					searchUrl = "https://chan.sankakucomplex.com/?tags=order:random+nico_robin+solo-rating:explicit";
-					if(!channelIsNSFW)
-					{
-						searchUrl += "-rating:questionnable";
-					}
+					searchUrl = "https://chan.sankakucomplex.com/?tags=order:random+nico_robin+solo+-rating:explicit";
 				}
 				else {
 					this.e.getChannel().sendMessage("no").queue();
