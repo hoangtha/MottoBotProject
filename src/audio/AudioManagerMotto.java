@@ -47,8 +47,16 @@ public class AudioManagerMotto {
 					firstTrack = playlist.getTracks().get(0);
 				}
 
-				channel.sendMessage(":musical_note: Ajoutée à la playlist : " + firstTrack.getInfo().title + " (Titre de la playlist  : "
-						+ playlist.getName() + ")").queue();
+				if(rechercheFlag)
+				{
+					channel.sendMessage(":musical_note: Ajoutée à la playlist : " + firstTrack.getInfo().title + " (Titre de la playlist  : "
+						+ playlist.getName() + ") - "+ trackUrl).queue();
+				}
+				else
+				{
+					channel.sendMessage(":musical_note: Ajoutée à la playlist : " + firstTrack.getInfo().title + " (Titre de la playlist  : "
+							+ playlist.getName() + ")").queue();
+				}
 
 				playList(channel.getGuild(), musicManager, playlist, vChannel);
 			}

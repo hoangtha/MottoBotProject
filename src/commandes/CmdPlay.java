@@ -32,7 +32,7 @@ public class CmdPlay implements Commande {
 		e.getChannel().sendTyping().queue();
 		boolean rechercheFlag = false;
 		Document doc;
-		String url = "https://www.youtube.com/results?sp=EgIQAQ%253D%253D&q=" + arguments;
+		String url = "https://www.youtube.com/results?q=" + arguments;
 		String videoUrl = "";
 		
 		if(!arguments.startsWith(("http")))
