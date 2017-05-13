@@ -28,13 +28,11 @@ public class CmdLaserBeam implements Commande {
 		
 		//cette partie la sert à géré un systeme de points de vie TODO
 		Member target = null;
-		Member caster = null;
 		if(arguments.startsWith("@"))
 		{
 			arguments = arguments.substring(1);
 		}
 		List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
-		List<Member> casterList = e.getGuild().getMembersByEffectiveName(e.getAuthor().getName(), true);
 		// --
 		
 		
@@ -42,7 +40,6 @@ public class CmdLaserBeam implements Commande {
 		if(targetList.size()>=1)
 		{
 			target = targetList.get(0);
-			caster = casterList.get(0);
 		}
 		
 		hey = new File("src/ressources/laserbeam.gif");

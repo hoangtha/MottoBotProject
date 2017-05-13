@@ -27,7 +27,7 @@ public class CmdFireball implements Commande {
 		e.getChannel().sendTyping().queue();
 		e.getMessage().delete().queue();
 		e.getAuthor();
-		
+
 		//cette partie la sert à géré un systeme de points de vie TODO
 		Member target = null;
 		Member caster = null;
@@ -36,7 +36,6 @@ public class CmdFireball implements Commande {
 			arguments = arguments.substring(1);
 		}
 		List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
-		List<Member> casterList = e.getGuild().getMembersByEffectiveName(e.getAuthor().getName(), true);
 		// --
 		
 		int random = CmdFireball.rand.nextInt(12);
@@ -44,8 +43,8 @@ public class CmdFireball implements Commande {
 		File hey = null;
 		if(targetList.size()>=1) {
 			target = targetList.get(0);
-			caster = casterList.get(0);
-		}	
+			caster = e.getMember();
+		}
 		if(target != null && target.getEffectiveName().equals(caster.getEffectiveName()))
 		{
 			e.getChannel().sendMessage("*<@"+e.getAuthor().getId()+"> is casting Fireball on himself...*").queue();

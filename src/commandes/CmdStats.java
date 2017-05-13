@@ -56,6 +56,10 @@ public class CmdStats implements Commande {
 			eb.addField("Temps cumulé passé en vocal par tout les membres", formatDuration(tempsEnVocal), true);
 		}
 		else {
+			if(arguments.startsWith("@"))
+			{
+				arguments = arguments.substring(1);
+			}
 			List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
 			Member target = null;
 			if(targetList.size()>=1) {
