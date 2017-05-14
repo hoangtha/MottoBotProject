@@ -15,6 +15,7 @@ public class CmdFireball implements Commande {
 	public static final String FIREBALL_FAIL = "http://puu.sh/vPfud/a8e46f0c89.gif";
 	public static final String FIREBALL_OP = "http://puu.sh/vPfpD/9acf1292da.gif";
 	public static final String FIREBALL_SELF = "http://puu.sh/vPfzS/ee260de294.gif";
+	public static final String FIREBALL_HS = "https://puu.sh/vPZmI/d065aa31ac.gif";
 	public static final Color FIRE = new Color(227, 140, 45);
 	private static Random rand = new Random();
 	
@@ -67,6 +68,11 @@ public class CmdFireball implements Commande {
 			if(random >35)
 			{
 				eb.setImage(FIREBALL_OP);
+			}
+			// la bonne blague
+			else if (random == 6)
+			{
+				eb.setImage(FIREBALL_HS);
 			}
 			else if (random < 5)
 			{
