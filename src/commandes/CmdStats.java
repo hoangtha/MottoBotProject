@@ -91,14 +91,17 @@ public class CmdStats implements Commande {
 				
 				if(up.commands>0) {
 					String topCommandesStr = "";
+					int totalCmds = 0;
 					ArrayList<Pair<String, Integer>> topCommandesTab = new ArrayList<Pair<String, Integer>>();
 					for(String c : up.commandsStats.keySet()) {
 						topCommandesTab.add(new Pair<String, Integer>(c, up.commandsStats.getOrDefault(c, 0)));
 					}
 					ArrayList<Pair<String, Integer>> topCommandesTabFinal = new ArrayList<Pair<String, Integer>>();
 					for(Pair<String, Integer> p : topCommandesTab) {
-						if (p.getKey()!=null && !p.getKey().isEmpty() && p.getValue()!=0)
+						if (p.getKey()!=null && !p.getKey().isEmpty() && p.getValue()!=0) {
+							totalCmds += p.getValue();
 							topCommandesTabFinal.add(p);
+						}
 					}
 					topCommandesTabFinal.sort(new Comparator<Pair<String, Integer>>() {
 						@Override
@@ -107,7 +110,8 @@ public class CmdStats implements Commande {
 						}
 					});
 					for(int i=0; i<Math.min(topCommandesTabFinal.size(),5); i++) {
-						topCommandesStr += (i+1)+". "+topCommandesTabFinal.get(i).getKey()+" - "+((double)topCommandesTabFinal.get(i).getValue()/(double)up.commands)*100.0+"%\n";
+						double cmdPercent = Math.round(((double)topCommandesTabFinal.get(i).getValue()/(double)totalCmds)*10000.0)/100.0;
+						topCommandesStr += (i+1)+". "+topCommandesTabFinal.get(i).getKey()+" - "+cmdPercent+"%\n";
 					}
 					if(topCommandesTabFinal.size()>0)
 						eb.addField("Top Commandes", topCommandesStr, false);
@@ -121,12 +125,13 @@ public class CmdStats implements Commande {
 					ArrayList<Pair<String, Integer>> topTagsTab = new ArrayList<Pair<String, Integer>>();
 					for(String c : up.mottoTagStats.keySet()) {
 						topTagsTab.add(new Pair<String, Integer>(c, up.mottoTagStats.getOrDefault(c, 0)));
-						totalTags += up.mottoTagStats.getOrDefault(c, 0);
 					}
 					ArrayList<Pair<String, Integer>> topTagsTabFinal = new ArrayList<Pair<String, Integer>>();
 					for(Pair<String, Integer> p : topTagsTab) {
-						if (p.getKey()!=null && !p.getKey().isEmpty() && p.getValue()!=0)
+						if (p.getKey()!=null && !p.getKey().isEmpty() && p.getValue()!=0) {
+							totalTags += p.getValue();
 							topTagsTabFinal.add(p);
+						}
 					}
 					topTagsTabFinal.sort(new Comparator<Pair<String, Integer>>() {
 						@Override
@@ -135,7 +140,8 @@ public class CmdStats implements Commande {
 						}
 					});
 					for(int i=0; i<Math.min(topTagsTabFinal.size(),5); i++) {
-						topTagsStr += (i+1)+". "+topTagsTabFinal.get(i).getKey()+" - "+((double)topTagsTabFinal.get(i).getValue()/(double)totalTags)*100.0+"%\n";
+						double tagPercent = Math.round(((double)topTagsTabFinal.get(i).getValue()/(double)totalTags)*10000.0)/100.0;
+						topTagsStr += (i+1)+". "+topTagsTabFinal.get(i).getKey()+" - "+tagPercent+"%\n";
 					}
 					if(topTagsTabFinal.size()>0)
 						eb.addField("Top Tags", topTagsStr, false);
