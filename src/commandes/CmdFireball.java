@@ -60,7 +60,7 @@ public class CmdFireball implements Commande {
 			eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
 			eb.setImage(FIREBALL_SELF);
 		}
-		//bite
+		
 		else
 		{
 			eb.setTitle("*"+e.getMember().getEffectiveName()+" is casting Fireball on "+target.getEffectiveName()+"...*", null);
