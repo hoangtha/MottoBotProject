@@ -38,7 +38,7 @@ public class CmdFireball implements Commande {
 		List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
 		// --
 		
-		int random = CmdFireball.rand.nextInt(12);
+		int random = CmdFireball.rand.nextInt(40);
 		
 		File hey = null;
 		if(targetList.size()>=1) {
@@ -53,13 +53,17 @@ public class CmdFireball implements Commande {
 		else
 		{
 			e.getChannel().sendMessage("*<@"+e.getAuthor().getId()+"> is casting Fireball on <@"+target.getUser().getId()+">...*").queue();
-			if(random >5)
+			if(random >35)
 			{
-				hey = new File("src/ressources/fireball_hit.gif");
+				hey = new File("src/ressources/fireball_op.gif");
+			}
+			else if (random < 5)
+			{
+				hey = new File("src/ressources/fireball_fail.gif");
 			}
 			else
 			{
-				hey = new File("src/ressources/fireball_fail.gif");
+				hey = new File("src/ressources/fireball_hit.gif");
 			}
 		}
 		try {

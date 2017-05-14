@@ -38,24 +38,26 @@ public class CmdForcePlay implements Commande {
 	
 		boolean rechercheFlag = false;
 		Document doc;
-		String url = "https://www.youtube.com/results?sp=EgIQAQ%253D%253D&q=" + arguments;
+		String url = "https://www.youtube.com/results?q=" + arguments;
 		String videoUrl = "";
-		
-		if(!arguments.startsWith(("http")))
+		if(e.getMember().getVoiceState().inVoiceChannel())
 		{
-			try {
-				doc = Jsoup.connect(url).get();
-				videoUrl = "https://www.youtube.com" + doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
-						.orElse("/watch?v=dQw4w9WgXcQ");
-				rechercheFlag = true;
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				videoUrl = "";
+			if(!arguments.startsWith(("http")))
+			{
+				try {
+					doc = Jsoup.connect(url).get();
+					videoUrl = "https://www.youtube.com" + doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
+							.orElse("/watch?v=dQw4w9WgXcQ");
+					rechercheFlag = true;
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					videoUrl = "";
+				}
 			}
-		}
-		else
-		{
-			videoUrl = arguments;
+			else
+			{
+				videoUrl = arguments;
+			}
 		}
 		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), videoUrl, bot, e.getMember().getVoiceState().getChannel(), rechercheFlag);
 	}
