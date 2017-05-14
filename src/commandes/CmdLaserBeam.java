@@ -48,11 +48,11 @@ public class CmdLaserBeam implements Commande {
 		
 		if(arguments != "")
 		{
-			eb.setTitle("*Nakarkos is casting Laser Beam on <@"+target.getUser().getId()+">...*", null);
+			eb.setTitle("*Nakarkos is casting Laser Beam on "+target.getUser().getName()+"...*", null);
 		}
 		else
 		{
-			eb.setTitle("*Nakarkos is casting Laser Beam on <@"+e.getAuthor().getId()+">...*", null);
+			eb.setTitle("*Nakarkos is casting Laser Beam on "+e.getAuthor().getName()+"...*", null);
 		}
 
 		eb.setImage(LASERBEAM);
