@@ -355,6 +355,9 @@ public class TallyCounter extends ListenerAdapter {
 		int n = up.commandsStats.getOrDefault(commande.getName(), 0) + 1;
 		up.commandsStats.put(commande.getName(), n);
 		if(commande.getClass().equals(CmdMotto.class)) {
+			if(up.mottoTagStats==null) {
+				up.mottoTagStats = new Hashtable<String, Integer>();
+			}
 			CmdMotto motto = (CmdMotto) commande;
 			if((arguments != null && arguments.isEmpty())) {
 				String[] tags = arguments.split("\\s+");
