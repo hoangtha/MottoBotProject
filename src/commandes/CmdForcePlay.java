@@ -8,6 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import main.MottoBot;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdForcePlay implements Commande {
@@ -37,9 +38,12 @@ public class CmdForcePlay implements Commande {
 		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
 	
 		boolean rechercheFlag = false;
+//		boolean inVoiceWithMottoBotFlag = false;
 		Document doc;
 		String url = "https://www.youtube.com/results?q=" + arguments;
 		String videoUrl = "";
+		
+		
 		if(e.getMember().getVoiceState().inVoiceChannel())
 		{
 			if(!arguments.startsWith(("http")))
@@ -58,7 +62,11 @@ public class CmdForcePlay implements Commande {
 			{
 				videoUrl = arguments;
 			}
+			bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), videoUrl, bot, e.getMember().getVoiceState().getChannel(), rechercheFlag);
 		}
-		bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), videoUrl, bot, e.getMember().getVoiceState().getChannel(), rechercheFlag);
+		else
+		{
+			e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> entre dans un channel vocal pour effectuer cette commande").queue();
+		}
 	}
 }
