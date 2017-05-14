@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 
 public class CmdRank implements Commande {
 	private static final Pattern PATTERN = Pattern.compile("^[^\\s]+ \"(.+)\" (#([0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}$|[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}$|[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}$|[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}$))", Pattern.CASE_INSENSITIVE); // option "titre" #couleur
@@ -83,7 +84,11 @@ public class CmdRank implements Commande {
 
 									@Override
 									public void accept(Role t) {
-										guildController.modifyRolePositions().selectPosition(t).moveTo(0);
+										RoleOrderAction roa = guildController.modifyRolePositions().selectPosition(t);
+										System.out.println("Position actuelle: "+roa.getSelectedPosition());
+										System.out.println("Position bot: "+guild.getSelfMember().getRoles().get(0).getPosition());
+										System.out.println("Position visée: "+(guild.getSelfMember().getRoles().get(0).getPosition()-1));
+										roa.moveTo(guild.getSelfMember().getRoles().get(0).getPosition()-1).queue();
 										if(up.title!=null) {
 											Role d = null;
 											for(Role r : guild.getRoles()) {
@@ -93,6 +98,9 @@ public class CmdRank implements Commande {
 											}
 											if (d!=null) {
 												d.delete().queue();
+											}
+											if(d==null) {
+												System.out.println("Je devais supprimer un rang mais je l'ai pas trouvé");
 											}
 										}
 										up.title = title;
