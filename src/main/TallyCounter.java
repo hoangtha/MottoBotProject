@@ -396,10 +396,10 @@ public class TallyCounter extends ListenerAdapter {
 				// Experience fix
 				//up.rewardExperience(0);
 				// Favors & Title fix
-				if(up.prestige>0) {
-					up.canRequestFavor = true;
-					up.canRequestTitleChange = true;
-				}
+				//if(up.prestige>0) {
+				//	up.canRequestFavor = true;
+				//	up.canRequestTitleChange = true;
+				//}
 			}
 		}
 	}
