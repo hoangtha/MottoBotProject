@@ -1,5 +1,6 @@
 package commandes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,15 @@ public class CmdSkip implements Commande {
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
-		int nbOfSkips = arguments.equals("") ? 1 : Integer.parseInt(arguments) ;
+		int nbOfSkips = 0;
+		try
+		{
+			nbOfSkips = arguments.equals("") ? 1 : Integer.parseInt(arguments) ;
+		}
+		catch (NumberFormatException e1) 
+		{
+			nbOfSkips = 0;
+		}
 		bot.getProperAudioManager().skipTrack(e.getTextChannel(), bot, nbOfSkips);
 	}
 }
