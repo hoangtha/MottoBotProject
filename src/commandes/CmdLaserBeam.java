@@ -1,14 +1,17 @@
 package commandes;
 
-import java.io.File;
-import java.io.IOException;
+import java.awt.Color;
 import java.util.List;
 
 import main.MottoBot;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdLaserBeam implements Commande {
+	
+	public static final String LASERBEAM = "http://puu.sh/vPfLD/946b739026.gif";
+	public static final Color LASER = new Color(255, 255, 102);
 	
 	@Override
 	public String getName() {
@@ -35,36 +38,34 @@ public class CmdLaserBeam implements Commande {
 		List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
 		// --
 		
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.setColor(LASER);
 		
-		File hey = null;
 		if(targetList.size()>=1)
 		{
 			target = targetList.get(0);
 		}
 		
-		hey = new File("src/ressources/laserbeam.gif");
 		if(arguments != "")
 		{
-			e.getChannel().sendMessage("*Nakarkos is casting Laser Beam on <@"+target.getUser().getId()+">...*").queue();
+			eb.setTitle("*Nakarkos is casting Laser Beam on <@"+target.getUser().getId()+">...*", null);
 		}
 		else
 		{
-			e.getChannel().sendMessage("*Nakarkos is casting Laser Beam on <@"+e.getAuthor().getId()+">...*").queue();
+			eb.setTitle("*Nakarkos is casting Laser Beam on <@"+e.getAuthor().getId()+">...*", null);
 		}
 
-		try {
-			e.getChannel().sendFile(hey, null).queue();
-			if(arguments != "")
-			{
-				e.getChannel().sendMessage("<@"+target.getUser().getId()+"> a pris 666 de points de dégats, ripped").queue();
-			}
-			else
-			{
-				e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> a pris 666 de points de dégats, ripped").queue();
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		eb.setImage(LASERBEAM);
+		if(arguments != "")
+		{
+			eb.appendDescription("<@"+target.getUser().getId()+"> a pris 666 de points de dégats, ripped");
 		}
+		else
+		{
+			eb.appendDescription("<@"+e.getAuthor().getId()+"> a pris 666 de points de dégats, ripped");
+		}
+		e.getChannel().sendMessage(eb.build()).queue();
+
 	}
 
 }

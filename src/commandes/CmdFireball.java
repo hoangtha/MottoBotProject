@@ -1,15 +1,21 @@
 package commandes;
 
-import java.io.File;
-import java.io.IOException;
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
 import main.MottoBot;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdFireball implements Commande {
+	
+	public static final String FIREBALL_HIT = "http://puu.sh/vPfy8/4d48d518dc.gif";
+	public static final String FIREBALL_FAIL = "http://puu.sh/vPfud/a8e46f0c89.gif";
+	public static final String FIREBALL_OP = "http://puu.sh/vPfpD/9acf1292da.gif";
+	public static final String FIREBALL_SELF = "http://puu.sh/vPfzS/ee260de294.gif";
+	public static final Color FIRE = new Color(227, 140, 45);
 	private static Random rand = new Random();
 	
 	@Override
@@ -40,39 +46,39 @@ public class CmdFireball implements Commande {
 		
 		int random = CmdFireball.rand.nextInt(40);
 		
-		File hey = null;
+		
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.setColor(FIRE);
+		
+		
 		if(targetList.size()>=1) {
 			target = targetList.get(0);
 			caster = e.getMember();
 		}
 		if(target != null && target.getEffectiveName().equals(caster.getEffectiveName()))
 		{
-			e.getChannel().sendMessage("*<@"+e.getAuthor().getId()+"> is casting Fireball on himself...*").queue();
-			hey = new File("src/ressources/fireball_self.gif");
+			eb.setTitle("*<@"+e.getAuthor().getId()+"> is casting Fireball on himself...*", null);
+			eb.setImage(FIREBALL_SELF);
 		}
 		else
 		{
-			e.getChannel().sendMessage("*<@"+e.getAuthor().getId()+"> is casting Fireball on <@"+target.getUser().getId()+">...*").queue();
+			eb.setTitle("*<@"+e.getAuthor().getId()+"> is casting Fireball on <@"+target.getUser().getId()+">...*", null);
 			if(random >35)
 			{
-				hey = new File("src/ressources/fireball_op.gif");
+				eb.setImage(FIREBALL_OP);
 			}
 			else if (random < 5)
 			{
-				hey = new File("src/ressources/fireball_fail.gif");
+				eb.setImage(FIREBALL_FAIL);
 			}
 			else
 			{
-				hey = new File("src/ressources/fireball_hit.gif");
+				eb.setImage(FIREBALL_HIT);
 			}
 		}
-		try {
-			
-			e.getChannel().sendFile(hey, null).queue();
-			e.getChannel().sendMessage("<@"+target.getUser().getId()+"> a pris "+random+" de points de dégats de :fire:").queue();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		eb.appendDescription("<@"+target.getUser().getId()+"> a pris "+random+" de points de dégats de :fire:");
+		e.getChannel().sendMessage(eb.build()).queue();
+
 	}
 
 }
