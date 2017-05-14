@@ -47,7 +47,7 @@ public class MottoBot extends ListenerAdapter
 
 	public static final String DEFAULT_SEARCH = "nico_robin";
 
-	public static final String VERSION = "42.0";
+	public static final String VERSION = "44.0";
 	
     private final AudioPlayerManager playerManager;
 

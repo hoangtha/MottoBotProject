@@ -57,6 +57,8 @@ public class TallyCounter extends ListenerAdapter {
 			System.out.println("Erreur lors du chargement de "+this.pathProgress+", création d'une nouvelle table.");
 			this.userProgress = new Hashtable<String, Hashtable<String, UserProgress>>();
 		}
+		this.fixExp();
+		this.saveToFile();
 		
 		Timer timeTimer = new Timer(true);
 		TimerTask timeTask = new TimerTask() {
@@ -99,6 +101,8 @@ public class TallyCounter extends ListenerAdapter {
 			if(up.prestige!=newPrestige) {
 				text += "\nPrestige "+up.prestige+"★ -> "+newPrestige+"★ !";
 				up.prestige = newPrestige;
+				up.canRequestFavor = true;
+				up.canRequestTitleChange = true;
 			}
 			mb.addField(effName, text, false);
 			List<TextChannel> channels = this.bot.getJda().getGuildById(guildId).getTextChannelsByName("annonces", true);
@@ -147,6 +151,8 @@ public class TallyCounter extends ListenerAdapter {
 						if(up.prestige!=newPrestige) {
 							text += "\nPrestige "+up.prestige+"★ -> "+newPrestige+"★ !";
 							up.prestige = newPrestige;
+							up.canRequestFavor = true;
+							up.canRequestTitleChange = true;
 						}
 						mb.addField(effName, text, false);
 					}
@@ -387,8 +393,13 @@ public class TallyCounter extends ListenerAdapter {
 	public void fixExp() {
 		for(Hashtable<String, UserProgress> guildTable : this.userProgress.values()) {
 			for(UserProgress up : guildTable.values()) {
-				// No fix
-				up.rewardExperience(0);
+				// Experience fix
+				//up.rewardExperience(0);
+				// Favors & Title fix
+				if(up.prestige>0) {
+					up.canRequestFavor = true;
+					up.canRequestTitleChange = true;
+				}
 			}
 		}
 	}

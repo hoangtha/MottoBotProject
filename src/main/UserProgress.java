@@ -19,7 +19,7 @@ public class UserProgress implements Serializable {
 	public String userId;
 	public String name;
 	public String discriminator;
-	
+
 	public String title;
 	public Color titleColor;
 	public boolean titleOn;
