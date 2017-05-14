@@ -224,7 +224,7 @@ public class MottoBot extends ListenerAdapter
         if (commande.isPresent()) {
         	// La commande existe
         	if(e.getChannelType()==ChannelType.TEXT) {
-        		this.tallyCounter.onCommandUse(e, commande.get());
+        		this.tallyCounter.onCommandUse(e, commande.get(), arguments);
         	}
         	commande.get().run(this, e, arguments);
         } else {

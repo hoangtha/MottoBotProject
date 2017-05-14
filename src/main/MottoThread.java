@@ -26,18 +26,17 @@ public class MottoThread implements Runnable {
 	
 	private Random rand;
 	
-	private ArrayList<String> robinArmy;
+	public ArrayList<String> robinArmy;
 
 	private String arguments;
 
 	private MessageReceivedEvent e;
 	
-	public MottoThread(MessageReceivedEvent e, String arguments) {
+	public MottoThread(MessageReceivedEvent e, String arguments, ArrayList<String> robinArmy) {
 		this.rand = new Random();
 		this.e = e;
 		this.arguments = arguments;
-		this.robinArmy = new ArrayList<String>();
-		this.robinArmy.add("269163044427268096"); // Freaking Potatoes
+		this.robinArmy = robinArmy;
 	}
 		
 	@Override

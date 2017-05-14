@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import commandes.CmdMotto;
 import commandes.Commande;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -339,7 +340,7 @@ public class TallyCounter extends ListenerAdapter {
 		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 
-	public void onCommandUse(MessageReceivedEvent event, Commande commande) {
+	public void onCommandUse(MessageReceivedEvent event, Commande commande, String arguments) {
 		if(event.getMember().getUser().isBot())
 			return;
 		String guildId = event.getGuild().getId();
@@ -353,6 +354,27 @@ public class TallyCounter extends ListenerAdapter {
 		up.commands++;
 		int n = up.commandsStats.getOrDefault(commande.getName(), 0) + 1;
 		up.commandsStats.put(commande.getName(), n);
+		if(commande.getClass().equals(CmdMotto.class)) {
+			CmdMotto motto = (CmdMotto) commande;
+			if((arguments != null && arguments.isEmpty())) {
+				String[] tags = arguments.split("\\s+");
+				for(int i=0; i<tags.length; i++) {
+					String t = tags[i].toLowerCase();
+					int tagCount = up.mottoTagStats.getOrDefault(t, 0) + 1;
+					up.mottoTagStats.put(t, tagCount);
+				}
+			}
+			else {
+				if(motto.robinArmy.contains(guildId)) {
+					String[] tags = MottoBot.DEFAULT_SEARCH.split("\\s+");
+					for(int i=0; i<tags.length; i++) {
+						String t = tags[i].toLowerCase();
+						int tagCount = up.mottoTagStats.getOrDefault(t, 0) + 1;
+						up.mottoTagStats.put(t, tagCount);
+					}
+				}
+			}
+		}
 		up.rewardCommandExperience();
 		checkLevelUp(up, guildId);
 		guildTable.putIfAbsent(userName, up);

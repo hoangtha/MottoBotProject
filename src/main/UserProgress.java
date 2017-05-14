@@ -34,6 +34,7 @@ public class UserProgress implements Serializable {
 	public Instant favorStartTime;
 
 	public Hashtable<String, Integer> commandsStats;
+	public Hashtable<String, Integer> mottoTagStats;
 	public Hashtable<Achievement, Instant> achievements;
 	
 	public int messages;
@@ -65,6 +66,7 @@ public class UserProgress implements Serializable {
 		this.favorStartTime = null;
 		
 		this.commandsStats = new Hashtable<String, Integer>();
+		this.mottoTagStats = new Hashtable<String, Integer>();
 		this.achievements = new Hashtable<Achievement, Instant>();
 		
 		this.messages = 0;

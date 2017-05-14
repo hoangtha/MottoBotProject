@@ -3,9 +3,11 @@ package commandes;
 import java.awt.Color;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import javafx.util.Pair;
 import main.MottoBot;
 import main.TallyCounter;
 import main.UserProgress;
@@ -86,6 +88,43 @@ public class CmdStats implements Commande {
 				eb.addField("Commandes", up.commands+"", true);
 				eb.addField("Temps passé en ligne", formatDuration(up.timeSpentOnline), false);
 				eb.addField("Temps passé en vocal", formatDuration(up.timeSpentVocal), false);
+				
+				if(up.commands>0) {
+					String topCommandesStr = "";
+					ArrayList<Pair<String, Integer>> topCommandesTab = new ArrayList<Pair<String, Integer>>();
+					for(String c : up.commandsStats.keySet()) {
+						topCommandesTab.add(new Pair<String, Integer>(c, up.commandsStats.getOrDefault(c, 0)));
+					}
+					topCommandesTab.sort(new Comparator<Pair<String, Integer>>() {
+						@Override
+						public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
+							return o1.getValue().compareTo(o2.getValue());
+						}
+					});
+					for(int i=0; i<5; i++) {
+						topCommandesStr += i+". "+topCommandesTab.get(i).getKey()+" - "+(topCommandesTab.get(i).getValue()/up.commands)*100+"%\n";
+					}
+					eb.addField("Top Commandes", topCommandesStr, false);
+				}
+				if(up.commandsStats.containsKey("motto")) {
+					String topTagsStr = "";
+					int totalTags = 0;
+					ArrayList<Pair<String, Integer>> topTagsTab = new ArrayList<Pair<String, Integer>>();
+					for(String c : up.mottoTagStats.keySet()) {
+						topTagsTab.add(new Pair<String, Integer>(c, up.mottoTagStats.getOrDefault(c, 0)));
+						totalTags += up.mottoTagStats.getOrDefault(c, 0);
+					}
+					topTagsTab.sort(new Comparator<Pair<String, Integer>>() {
+						@Override
+						public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
+							return o1.getValue().compareTo(o2.getValue());
+						}
+					});
+					for(int i=0; i<5; i++) {
+						topTagsStr += i+". "+topTagsTab.get(i).getKey()+" - "+(topTagsTab.get(i).getValue()/totalTags)*100+"%\n";
+					}
+					eb.addField("Top Tags", topTagsStr, false);
+				}
 			}
 			else {
 				err = true;

@@ -8,7 +8,7 @@ import main.MottoThread;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdMotto implements Commande {	
-	private ArrayList<String> robinArmy;
+	public ArrayList<String> robinArmy;
 	
 	public CmdMotto() {
 		this.robinArmy = new ArrayList<String>();
@@ -27,7 +27,7 @@ public class CmdMotto implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
-		(new Thread(new MottoThread(e, arguments))).start();
+		(new Thread(new MottoThread(e, arguments, this.robinArmy))).start();
 		bot.addMsg(e.getMessage());
 	}
 }
