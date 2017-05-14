@@ -16,6 +16,7 @@ public class CmdFireball implements Commande {
 	public static final String FIREBALL_OP = "http://puu.sh/vPfpD/9acf1292da.gif";
 	public static final String FIREBALL_SELF = "http://puu.sh/vPfzS/ee260de294.gif";
 	public static final String FIREBALL_HS = "https://puu.sh/vPZmI/d065aa31ac.gif";
+	public static final String FIREBALL_FEUNARD = "https://puu.sh/vQ0wr/446ab8e248.gif";
 	public static final Color FIRE = new Color(227, 140, 45);
 	private static Random rand = new Random();
 	
