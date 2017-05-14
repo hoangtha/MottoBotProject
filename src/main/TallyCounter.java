@@ -359,7 +359,7 @@ public class TallyCounter extends ListenerAdapter {
 				up.mottoTagStats = new Hashtable<String, Integer>();
 			}
 			CmdMotto motto = (CmdMotto) commande;
-			if((arguments != null && arguments.isEmpty())) {
+			if(arguments!=null && arguments.isEmpty()==false) {
 				String[] tags = arguments.split("\\s+");
 				for(int i=0; i<tags.length; i++) {
 					String t = tags[i].toLowerCase();
