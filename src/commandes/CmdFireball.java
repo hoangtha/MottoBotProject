@@ -62,7 +62,7 @@ public class CmdFireball implements Commande {
 		}
 		else
 		{
-			eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on "+target.getUser().getName()+"...*", null);
+			eb.setTitle("*"+e.getMember().getEffectiveName()+" is casting Fireball on "+target.getEffectiveName()+"...*", null);
 			if(random >35)
 			{
 				eb.setImage(FIREBALL_OP);
