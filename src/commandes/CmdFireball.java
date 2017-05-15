@@ -21,6 +21,10 @@ public class CmdFireball implements Commande {
 	public static final String FIREBALL_MADARA = "https://puu.sh/vQQ6S/ab9e979b4a.gif" ;
 	public static final String FIREBALL_ACE = "https://puu.sh/vQQMb/2f84fbd386.gif" ;
 	public static final String FIREBALL_FREEZER = "https://puu.sh/vQRMm/9917d3c76a.gif" ;
+	public static final String FIREBALL_ROY = "https://puu.sh/vQT7G/2c1b091765.gif" ;
+	public static final String FIREBALL_AVATAR = "https://puu.sh/vQU4s/d85c14c40f.gif" ;
+	
+	
 	public static final Color FIRE = new Color(227, 140, 45);
 	private static Random rand = new Random();
 	
@@ -61,7 +65,7 @@ public class CmdFireball implements Commande {
 		}
 		if(target != null)
 		{
-			String msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de d√©gats de :fire:";
+			String msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de d®¶gats de :fire:";
 			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
 				eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
@@ -90,13 +94,21 @@ public class CmdFireball implements Commande {
 				}
 				else if (random < 10)
 				{
-					eb.setImage(FIREBALL_FEUNARD);
+					eb.setImage(FIREBALL_AVATAR);
 				}
 				else if (random < 15)
 				{
-					eb.setImage(FIREBALL_MADARA);
+					eb.setImage(FIREBALL_FEUNARD);
 				}
 				else if (random < 20)
+				{
+					eb.setImage(FIREBALL_MADARA);
+				}
+				else if (random < 25)
+				{
+					eb.setImage(FIREBALL_ROY);
+				}
+				else if (random < 30)
 				{
 					eb.setImage(FIREBALL_ACE);
 				}

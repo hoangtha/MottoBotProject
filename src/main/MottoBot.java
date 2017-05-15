@@ -194,7 +194,7 @@ public class MottoBot extends ListenerAdapter
 			{
 				event.getChannel().sendTyping().queue();
 				Random rand = new Random();
-				int randomizedMsgIndex = rand.nextInt(4);
+				int randomizedMsgIndex = rand.nextInt(9);
 				String msg = "";
 				switch (randomizedMsgIndex)
 				{
@@ -209,6 +209,21 @@ public class MottoBot extends ListenerAdapter
 					break;
 				case 3 :
 					msg = "koi?";
+					break;
+				case 4 :
+					msg = "J'ai rien à te dire, boloss";
+					break;
+				case 5 :
+					msg = "tu peux arreter ça stttttttttttttttppppppppppppppppppp? merci, enculé(e)";
+					break;
+				case 6 :
+					msg ="La pieuvre mimétique ou pieuvre-mime (Thaumoctopus mimicus) est une espèce de pieuvres, capable d'imiter d'autres animaux marins. C'est la seule espèce du genre Thaumoctopus.La pieuvre mimétique vit dans les mers tropicales d'Asie du Sud-Est. Elle ne fut découverte officiellement qu'en 1998, au large des côtes de Sulawesi. Cette pieuvre est capable d'imiter l'apparence(cmb) et les mouvements de plus de quinze espèces différentes, dont les serpents de mer, la rascasse volante, les poissons plats, les poissons-grenouilles, les ophiures, les crabes géants, les coquillages, les raies, les anémones de mer, les ademages, les méduses et les crevettes mantes. Elle accomplit cette prouesse en se contorsionnant — corps et bras — et en changeant de couleur. Source Wikipédia";
+					break;
+				case 7 :
+					msg = "OKLM les batards?";
+					break;
+				case 8 :
+					msg = "https://puu.sh/vQV22/5b109f8574.jpg";
 					break;
 				default:
 					msg = "???????";
