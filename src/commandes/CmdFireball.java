@@ -129,7 +129,7 @@ public class CmdFireball implements Commande {
 		}
 		else
 		{
-			e.getChannel().sendMessage("Tu compte toucher qui, d®¶bilos?").queue();
+			e.getChannel().sendMessage("Tu compte toucher qui, d√©bilos?").queue();
 		}
 	}
 }
