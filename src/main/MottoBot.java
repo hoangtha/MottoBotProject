@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,9 +63,12 @@ public class MottoBot extends ListenerAdapter
 	private boolean stop;
 
 	private String token;
+	
+	private Random RNG;
 
 	public MottoBot(String token)
 	{
+		this.RNG = new Random();
 		this.token = token;
 		this.msgTab = new ArrayList<Message>();
 		this.commandesValides = new ArrayList<Commande>();
@@ -153,13 +157,31 @@ public class MottoBot extends ListenerAdapter
 	
 	private void run() {
 		this.stop = false;
-
+		int rand;
+		Hashtable<String, Instant> guildEvents = new Hashtable<String, Instant>();
+		List<String> eventGuilds = new ArrayList<String>();
+		eventGuilds.add("269163044427268096");
+		
 		while (!this.stop)
 		{
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			}
+			for(Guild g : this.jda.getGuilds()) {
+				String guildID = g.getId();
+				if(eventGuilds.contains(guildID)) {
+					if(guildEvents.getOrDefault(guildID, Instant.EPOCH).isBefore(Instant.now())) {
+						rand = this.RNG.nextInt(100)+1;
+						
+						if(rand<5) 
+						{
+							guildEvents.put(guildID, Instant.now().plusSeconds(90));
+							g.getTextChannels().get(this.RNG.nextInt(g.getTextChannels().size())).sendMessage("Meh");
+						}
+					}
+				}
 			}
 		}
 		
