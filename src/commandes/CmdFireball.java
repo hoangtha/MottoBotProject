@@ -82,7 +82,7 @@ public class CmdFireball implements Commande {
 				else if (random == 6)
 				{
 					eb.setImage(FIREBALL_HS);
-					msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de degats des coussins de Jaina";
+					msg = "<@"+target.getUser().getId()+"> a pris "+random+" de degats des coussins de Jaina";
 				}
 				else if (random == 40)
 				{
@@ -100,6 +100,7 @@ public class CmdFireball implements Commande {
 				else if (random < 15)
 				{
 					eb.setImage(FIREBALL_FEUNARD);
+					msg = "<@"+target.getUser().getId()+"> a perdu "+random+" PV ";
 				}
 				else if (random < 20)
 				{
@@ -125,6 +126,10 @@ public class CmdFireball implements Commande {
 			}
 			eb.appendDescription(msg);
 			e.getChannel().sendMessage(eb.build()).queue();
+		}
+		else
+		{
+			e.getChannel().sendMessage("Tu compte toucher qui, d¨¦bilos?").queue();
 		}
 	}
 }
