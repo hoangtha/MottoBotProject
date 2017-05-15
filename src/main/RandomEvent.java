@@ -16,11 +16,13 @@ public class RandomEvent extends ListenerAdapter {
 	private boolean finished;
 	private Guild guild;
 	private Random RNG;
+	private MottoBot bot;
 	
-	public RandomEvent(Guild g) {
+	public RandomEvent(Guild g, MottoBot bot) {
 		this.eventMessage = null;
 		this.guild = g;
 		this.finished = false;
+		this.bot = bot;
 		this.RNG = new Random();
 	}
 
@@ -29,8 +31,7 @@ public class RandomEvent extends ListenerAdapter {
 	}
 
 	public void run() {
-		this.guild.getTextChannels().get(this.RNG.nextInt(this.guild.getTextChannels().size())).sendMessage("Event !");
-		
+		this.guild.getTextChannels().get(this.RNG.nextInt(this.guild.getTextChannels().size())).sendMessage("Event !").queue();
 	}
 	/*
     public void onMessageDelete(MessageDeleteEvent e) {
@@ -43,7 +44,7 @@ public class RandomEvent extends ListenerAdapter {
     */
     public void onMessageReactionAdd(MessageReactionAddEvent e) {
     	this.eventMessage.editMessage("Event terminé !");
-    	this.finished = true;
+    	this.end();
     }
     /*
     public void onMessageReactionRemove(MessageReactionRemoveEvent e) {
@@ -54,4 +55,9 @@ public class RandomEvent extends ListenerAdapter {
     	
     }
     */
+
+	private void end() {
+    	this.bot.getJda().removeEventListener(this);
+    	this.finished = true;
+	}
 }

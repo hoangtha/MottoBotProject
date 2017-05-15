@@ -182,7 +182,7 @@ public class MottoBot extends ListenerAdapter
 							
 							if(rand<5) 
 							{
-								RandomEvent event = new RandomEvent(g);
+								RandomEvent event = new RandomEvent(g, this);
 								guildEvents.put(guildID, new Pair<Instant, RandomEvent>(Instant.now().plusSeconds(240), event));
 								this.jda.addEventListener(event);
 								event.run();
