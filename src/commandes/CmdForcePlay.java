@@ -65,7 +65,7 @@ public class CmdForcePlay implements Commande {
 		}
 		else
 		{
-			e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> entre dans un channel vocal pour effectuer cette commande").queue();
+			e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> :  entre dans un channel vocal pour effectuer cette commande").queue();
 		}
 	}
 }

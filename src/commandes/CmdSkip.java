@@ -24,16 +24,23 @@ public class CmdSkip implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
-		bot.addMsg(e.getMessage());
-		int nbOfSkips = 0;
-		try
+		if(e.getMember().getVoiceState().inVoiceChannel())
 		{
-			nbOfSkips = arguments.equals("") ? 1 : Integer.parseInt(arguments) ;
+			bot.addMsg(e.getMessage());
+			int nbOfSkips = 0;
+			try
+			{
+				nbOfSkips = arguments.equals("") ? 1 : Integer.parseInt(arguments) ;
+			}
+			catch (NumberFormatException e1) 
+			{
+				nbOfSkips = 0;
+			}
+			bot.getProperAudioManager().skipTrack(e.getTextChannel(), bot, nbOfSkips);
 		}
-		catch (NumberFormatException e1) 
+		else
 		{
-			nbOfSkips = 0;
+			e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> : entre dans un channel vocal pour effectuer cette commande").queue();
 		}
-		bot.getProperAudioManager().skipTrack(e.getTextChannel(), bot, nbOfSkips);
 	}
 }

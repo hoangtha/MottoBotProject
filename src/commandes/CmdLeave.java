@@ -24,10 +24,18 @@ public class CmdLeave implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
-		bot.addMsg(e.getMessage());
+		if(e.getMember().getVoiceState().inVoiceChannel())
+		{
+			bot.addMsg(e.getMessage());
 		
-		e.getChannel().sendMessage("byebye!").queue();
-		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-		e.getGuild().getAudioManager().closeAudioConnection();
+			e.getChannel().sendMessage("byebye!").queue();
+			bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
+			e.getGuild().getAudioManager().closeAudioConnection();
+		}
+		else
+		{
+			e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> : entre dans un channel vocal pour effectuer cette commande").queue();
+
+		}
 	}
 }
