@@ -52,66 +52,65 @@ public class CmdFireball implements Commande {
 		
 		int random = CmdFireball.rand.nextInt(41);
 		
-		
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setColor(FIRE);
-		
 		
 		if(targetList.size()>=1) {
 			target = targetList.get(0);
 			caster = e.getMember();
 		}
-		if(target != null && target.getEffectiveName().equals(caster.getEffectiveName()))
+		if(target != null)
 		{
-			eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
-			eb.setImage(FIREBALL_SELF);
-		}
-		
-		else
-		{
-			eb.setTitle("*"+e.getMember().getEffectiveName()+" is casting Fireball on "+target.getEffectiveName()+"...*", null);
-			if (random == 0)
+			String msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de dégats de :fire:";
+			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
-				eb.setImage(FIREBALL_NULL);
-			}
-			// la bonne blague
-			else if (random == 6)
-			{
-				eb.setImage(FIREBALL_HS);
-			}
-			else if (random == 40)
-			{
-				eb.setImage(FIREBALL_FREEZER);
-				//eb.appendDescription("<@"+target.getUser().getId()+"> est mort par le :fire:");
-			}
-			else if (random < 5)
-			{
-				eb.setImage(FIREBALL_FAIL);
-			}
-			else if (random < 10)
-			{
-				eb.setImage(FIREBALL_FEUNARD);
-			}
-			else if (random < 15)
-			{
-				eb.setImage(FIREBALL_MADARA);
-			}
-			else if (random < 20)
-			{
-				eb.setImage(FIREBALL_ACE);
-			}
-			else if(random >35)
-			{
-				eb.setImage(FIREBALL_OP);
+				eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
+				eb.setImage(FIREBALL_SELF);
 			}
 			else
 			{
-				eb.setImage(FIREBALL_HIT);
+				eb.setTitle("*"+e.getMember().getEffectiveName()+" is casting Fireball on "+target.getEffectiveName()+"...*", null);
+				if (random == 0)
+				{
+					eb.setImage(FIREBALL_NULL);
+				}
+				// la bonne blague
+				else if (random == 6)
+				{
+					eb.setImage(FIREBALL_HS);
+				}
+				else if (random == 40)
+				{
+					eb.setImage(FIREBALL_FREEZER);
+					msg = "<@"+target.getUser().getId()+"> est mort par le :fire:";
+				}
+				else if (random < 5)
+				{
+					eb.setImage(FIREBALL_FAIL);
+				}
+				else if (random < 10)
+				{
+					eb.setImage(FIREBALL_FEUNARD);
+				}
+				else if (random < 15)
+				{
+					eb.setImage(FIREBALL_MADARA);
+				}
+				else if (random < 20)
+				{
+					eb.setImage(FIREBALL_ACE);
+				}
+				else if(random > 35)
+				{
+					eb.setImage(FIREBALL_OP);
+				}
+				else
+				{
+					eb.setImage(FIREBALL_HIT);
+				}
 			}
+			eb.appendDescription(msg);
+			e.getChannel().sendMessage(eb.build()).queue();
 		}
-		eb.appendDescription("<@"+target.getUser().getId()+"> a pris "+random+" de points de dégats de :fire:");
-		e.getChannel().sendMessage(eb.build()).queue();
-
 	}
-
 }
