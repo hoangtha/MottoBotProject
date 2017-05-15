@@ -216,7 +216,7 @@ public class MottoBot extends ListenerAdapter
 			{
 				event.getChannel().sendTyping().queue();
 				Random rand = new Random();
-				int randomizedMsgIndex = rand.nextInt(9);
+				int randomizedMsgIndex = rand.nextInt(12);
 				String msg = "";
 				switch (randomizedMsgIndex)
 				{
@@ -246,6 +246,15 @@ public class MottoBot extends ListenerAdapter
 					break;
 				case 8 :
 					msg = "https://puu.sh/vQV22/5b109f8574.jpg";
+					break;
+				case 9 :
+					msg = "Blargh";
+					break;
+				case 10 :
+					msg = "Ademage est une légende";
+					break;
+				case 11 :
+					msg = "Kestuveutoi?";
 					break;
 				default:
 					msg = "???????";
