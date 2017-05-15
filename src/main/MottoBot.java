@@ -85,7 +85,7 @@ public class MottoBot extends ListenerAdapter
 		int nbServeurs = this.jda.getGuilds().size();
 		System.out.println("Le bot est autorisé sur " + nbServeurs + " serveur" + (nbServeurs > 1 ? "s" : ""));
 		for(Guild g:this.jda.getGuilds()) {
-			System.out.println("\t"+g.getName());
+			System.out.println("\t"+g.getName()+" - "+g.getId());
 		}
 		this.jda.getPresence().setGame(Game.of("=motto"));
 		

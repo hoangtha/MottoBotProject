@@ -58,3 +58,4 @@ bin/main/Main.class
 /target/
 launch.bat
 *.jar
+userProgress.ser
