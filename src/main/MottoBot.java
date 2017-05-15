@@ -23,6 +23,7 @@ import audio.AudioManagerMotto;
 import audio.GuildMusicManager;
 import commandes.CmdStats;
 import commandes.Commande;
+import javafx.util.Pair;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -158,7 +159,7 @@ public class MottoBot extends ListenerAdapter
 	private void run() {
 		this.stop = false;
 		int rand;
-		Hashtable<String, Instant> guildEvents = new Hashtable<String, Instant>();
+		Hashtable<String, Pair<Instant, RandomEvent>> guildEvents = new Hashtable<String, Pair<Instant, RandomEvent>>();
 		List<String> eventGuilds = new ArrayList<String>();
 		eventGuilds.add("269163044427268096");
 		
@@ -172,13 +173,20 @@ public class MottoBot extends ListenerAdapter
 			for(Guild g : this.jda.getGuilds()) {
 				String guildID = g.getId();
 				if(eventGuilds.contains(guildID)) {
-					if(guildEvents.getOrDefault(guildID, Instant.EPOCH).isBefore(Instant.now())) {
-						rand = this.RNG.nextInt(100)+1;
-						
-						if(rand<5) 
+					Pair<Instant, RandomEvent> guildEvent = guildEvents.getOrDefault(guildID, new Pair<Instant, RandomEvent>(Instant.EPOCH, null));
+					if(guildEvent.getKey().isBefore(Instant.now()))
+					{
+						if(guildEvent.getValue()==null || guildEvent.getValue().hasEnded())
 						{
-							guildEvents.put(guildID, Instant.now().plusSeconds(90));
-							g.getTextChannels().get(this.RNG.nextInt(g.getTextChannels().size())).sendMessage("Meh");
+							rand = this.RNG.nextInt(100)+1;
+							
+							if(rand<5) 
+							{
+								RandomEvent event = new RandomEvent(g);
+								guildEvents.put(guildID, new Pair<Instant, RandomEvent>(Instant.now().plusSeconds(240), event));
+								this.jda.addEventListener(event);
+								event.run();
+							}
 						}
 					}
 				}
