@@ -65,7 +65,7 @@ public class CmdFireball implements Commande {
 		}
 		if(target != null)
 		{
-			String msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de d¨¦gats de :fire:";
+			String msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de degats de :fire:";
 			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
 				eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
