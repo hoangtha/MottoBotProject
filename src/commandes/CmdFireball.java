@@ -82,6 +82,7 @@ public class CmdFireball implements Commande {
 				else if (random == 6)
 				{
 					eb.setImage(FIREBALL_HS);
+					msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de degats des coussins de Jaina";
 				}
 				else if (random == 40)
 				{
@@ -115,6 +116,7 @@ public class CmdFireball implements Commande {
 				else if(random > 35)
 				{
 					eb.setImage(FIREBALL_OP);
+					msg = "EXPLOSIOOOOOOOOOOOOOOON!";
 				}
 				else
 				{
