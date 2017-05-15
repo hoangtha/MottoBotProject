@@ -1,6 +1,7 @@
 package main;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -31,7 +32,13 @@ public class RandomEvent extends ListenerAdapter {
 	}
 
 	public void run() {
-		this.guild.getTextChannels().get(this.RNG.nextInt(this.guild.getTextChannels().size())).sendMessage("Event !").queue();
+		this.guild.getTextChannels().get(this.RNG.nextInt(this.guild.getTextChannels().size())).sendMessage("Event !").queue(new Consumer<Message>() {
+			
+			@Override
+			public void accept(Message t) {
+				RandomEvent.this.eventMessage = t;
+			}
+		});
 	}
 	/*
     public void onMessageDelete(MessageDeleteEvent e) {
@@ -43,8 +50,10 @@ public class RandomEvent extends ListenerAdapter {
     }
     */
     public void onMessageReactionAdd(MessageReactionAddEvent e) {
-    	this.eventMessage.editMessage("Event terminé !");
-    	this.end();
+    	if(e.getMessageId()==this.eventMessage.getId()) {
+	    	this.eventMessage.editMessage("Event terminé !").queue();
+	    	this.end();
+    	}
     }
     /*
     public void onMessageReactionRemove(MessageReactionRemoveEvent e) {
