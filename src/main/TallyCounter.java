@@ -390,6 +390,7 @@ public class TallyCounter extends ListenerAdapter {
 		this.userProgress.putIfAbsent(guildId, guildTable);
 	}
 
+	@SuppressWarnings("unused")
 	public void fixExp() {
 		for(Hashtable<String, UserProgress> guildTable : this.userProgress.values()) {
 			for(UserProgress up : guildTable.values()) {

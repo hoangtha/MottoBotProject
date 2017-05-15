@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import main.MottoBot;
-import main.MottoThread;
+import main.MottoPictureThread;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdMotto implements Commande {	
@@ -27,7 +27,7 @@ public class CmdMotto implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
-		(new Thread(new MottoThread(e, arguments, this.robinArmy))).start();
+		(new Thread(new MottoPictureThread(e, arguments, this.robinArmy))).start();
 		bot.addMsg(e.getMessage());
 	}
 }

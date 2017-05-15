@@ -10,11 +10,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import main.MottoBot;
-import main.MottoThread;
+import main.MottoPictureThread;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class MottoThread implements Runnable {
+public class MottoPictureThread implements Runnable {
 	private static final int YANDERE = 0;
 	private static final int KONACHAN = 1;
 	private static final int SANKAKU = 2;
@@ -32,7 +32,7 @@ public class MottoThread implements Runnable {
 
 	private MessageReceivedEvent e;
 	
-	public MottoThread(MessageReceivedEvent e, String arguments, ArrayList<String> robinArmy) {
+	public MottoPictureThread(MessageReceivedEvent e, String arguments, ArrayList<String> robinArmy) {
 		this.rand = new Random();
 		this.e = e;
 		this.arguments = arguments;
