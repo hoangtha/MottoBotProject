@@ -1,25 +1,25 @@
 package commandes;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+//import java.util.Hashtable;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.util.function.Consumer;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
 
-import java.awt.Color;
+//import java.awt.Color;
 import main.MottoBot;
-import main.TallyCounter;
-import main.UserProgress;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Role;
+//import main.TallyCounter;
+//import main.UserProgress;
+//import net.dv8tion.jda.core.entities.ChannelType;
+//import net.dv8tion.jda.core.entities.Guild;
+//import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.managers.GuildController;
-import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
+//import net.dv8tion.jda.core.managers.GuildController;
+//import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 
 public class CmdRank implements Commande {
-	private static final Pattern PATTERN = Pattern.compile("^[^\\s]+ \"(.+)\" (#([0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}$|[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}$|[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}$|[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}$))", Pattern.CASE_INSENSITIVE); // option "titre" #couleur
+	//private static final Pattern PATTERN = Pattern.compile("^[^\\s]+ \"(.+)\" (#([0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}$|[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}[0123456789ABCDEF]{1}$|[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}$|[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}[0123456789ABCDEF]{2}$))", Pattern.CASE_INSENSITIVE); // option "titre" #couleur
 	
 	@Override
 	public String getName() {
@@ -35,7 +35,7 @@ public class CmdRank implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
-		if(e.getChannelType()!=ChannelType.PRIVATE) {
+		/*if(e.getChannelType()!=ChannelType.PRIVATE) {
 			TallyCounter tc = bot.getTallyCounter();
 			String guildId = e.getGuild().getId();
 			String userId = e.getAuthor().getId();
@@ -88,7 +88,7 @@ public class CmdRank implements Commande {
 										System.out.println("Position actuelle: "+roa.getSelectedPosition());
 										System.out.println("Position bot: "+guild.getSelfMember().getRoles().get(0).getPosition());
 										System.out.println("Position visée: "+(guild.getSelfMember().getRoles().get(0).getPosition()-1));
-										roa.moveTo(guild.getSelfMember().getRoles().get(0).getPosition()-1).queue();
+										roa.moveTo(guild.getMemberById(up.userId).getRoles().get(0).getPosition()).queue();
 										if(up.title!=null) {
 											Role d = null;
 											for(Role r : guild.getRoles()) {
@@ -167,6 +167,7 @@ public class CmdRank implements Commande {
 	        else {
 	        	e.getChannel().sendMessage("Pour changer de titre, utilisez =mottorank set \"Votre Rang\" #COULEURHEXA\n\tExemple: =mottorank set \"Gros débile\" #AA6622\nPour activer ou désactiver votre rang personnalisé, utiliser =mottorank on/off").queue();
 	        }
-		}
+		}*/
+		e.getChannel().sendMessage("Pas pour l'instant. :/");
 	}
 }
