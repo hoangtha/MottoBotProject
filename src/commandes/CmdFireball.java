@@ -99,7 +99,7 @@ public class CmdFireball implements Commande {
 				else if (random < 5)
 				{
 					eb.setImage(FIREBALL_FAIL);
-					msg = "<@"+caster.getEffectiveName()+",le sous-mage, a seulement infligé "+random+" dégats de feu à <@"+target.getUser().getId()+">";
+					msg = "<@"+caster.getEffectiveName()+">, le sous-mage, a seulement infligé "+random+" dégats de feu à <@"+target.getUser().getId()+">";
 				}
 				else if (random < 10)
 				{
