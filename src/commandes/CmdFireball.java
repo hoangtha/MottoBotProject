@@ -49,7 +49,7 @@ public class CmdFireball implements Commande {
 		Member target = null;
 		Member caster = null;
 		String msg = "";
-		Member Toraniso = e.getGuild().getMemberById("!123860660487454720"); // ID Toraniso <@!123860660487454720> un point d'exclamation?
+		Member Toraniso = e.getGuild().getMemberById("123860660487454720"); // ID Toraniso <@!123860660487454720> un point d'exclamation?
 		
 		if(arguments.startsWith("@"))
 		{
