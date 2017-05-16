@@ -27,7 +27,7 @@ public class CmdMotto implements Commande {
 
 	@Override
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
-		(new Thread(new MottoPictureThread(e, arguments, this.robinArmy))).start();
+		(new Thread(new MottoPictureThread(e, arguments, this.robinArmy))).start(); 
 		bot.addMsg(e.getMessage());
 	}
 }

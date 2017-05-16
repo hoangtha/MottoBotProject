@@ -36,7 +36,7 @@ public class MottoPictureThread implements Runnable {
 		this.rand = new Random();
 		this.e = e;
 		this.arguments = arguments;
-		this.robinArmy = robinArmy;
+		this.robinArmy = robinArmy; 
 	}
 		
 	@Override
