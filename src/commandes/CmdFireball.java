@@ -23,6 +23,7 @@ public class CmdFireball implements Commande {
 	public static final String FIREBALL_FREEZER = "https://puu.sh/vQRMm/9917d3c76a.gif" ;
 	public static final String FIREBALL_ROY = "https://puu.sh/vQT7G/2c1b091765.gif" ;
 	public static final String FIREBALL_AVATAR = "https://puu.sh/vQU4s/d85c14c40f.gif" ;
+	public static final String FIREBALL_CAT = "https://puu.sh/vRWji/1cc9e0d667.gif" ;
 	
 	
 	public static final Color FIRE = new Color(227, 140, 45);
@@ -47,6 +48,9 @@ public class CmdFireball implements Commande {
 		//cette partie la sert à géré un systeme de points de vie TODO
 		Member target = null;
 		Member caster = null;
+		String msg = "";
+		Member Toraniso = e.getGuild().getMemberById("!123860660487454720"); // ID Toraniso <@!123860660487454720> un point d'exclamation?
+		
 		if(arguments.startsWith("@"))
 		{
 			arguments = arguments.substring(1);
@@ -59,13 +63,15 @@ public class CmdFireball implements Commande {
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setColor(FIRE);
 		
-		if(targetList.size()>=1) {
+		if(targetList.size()>=1)
+		{
 			target = targetList.get(0);
 			caster = e.getMember();
 		}
+		
 		if(target != null)
 		{
-			String msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de degats de :fire:";
+			msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de degats de :fire:";
 			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
 				eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
@@ -77,6 +83,7 @@ public class CmdFireball implements Commande {
 				if (random == 0)
 				{
 					eb.setImage(FIREBALL_NULL);
+					msg = "<@"+caster.getEffectiveName()+"> est à court de Magie et fait "+random+" dégats";
 				}
 				// la bonne blague
 				else if (random == 6)
@@ -87,11 +94,12 @@ public class CmdFireball implements Commande {
 				else if (random == 40)
 				{
 					eb.setImage(FIREBALL_FREEZER);
-					msg = "<@"+target.getUser().getId()+"> est mort par le :fire:";
+					msg = "<@"+target.getUser().getId()+"> est mort par le :fire:, RIP in peace";
 				}
 				else if (random < 5)
 				{
 					eb.setImage(FIREBALL_FAIL);
+					msg = "<@"+caster.getEffectiveName()+",le sous-mage, a seulement infligé "+random+" dégats de feu à <@"+target.getUser().getId()+">";
 				}
 				else if (random < 10)
 				{
@@ -129,7 +137,10 @@ public class CmdFireball implements Commande {
 		}
 		else
 		{
-			e.getChannel().sendMessage("Tu compte toucher qui, débilos?").queue();
+			msg = "Prend ça dans ta gueule <@"+Toraniso+">";
+			eb.setImage(FIREBALL_CAT);
+			eb.appendDescription(msg);
+			e.getChannel().sendMessage(eb.build()).queue();
 		}
 	}
 }
