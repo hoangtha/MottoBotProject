@@ -89,7 +89,7 @@ public class CmdFireball implements Commande {
 				else if (random == 6)
 				{
 					eb.setImage(FIREBALL_HS);
-					msg = "<@"+target.getUser().getId()+"> a pris "+random+" de degats des coussins de Jaina";
+					msg = "<@"+target.getUser().getId()+"> a pris "+random+" de dégats des coussins de Jaina";
 				}
 				else if (random == 40)
 				{
@@ -137,7 +137,7 @@ public class CmdFireball implements Commande {
 		}
 		else
 		{
-			msg = "Prend ça dans ta gueule <@"+Toraniso+">";
+			msg = "Prend ça dans ta gueule <@"+Toraniso.getEffectiveName()+">";
 			eb.setImage(FIREBALL_CAT);
 			eb.appendDescription(msg);
 			e.getChannel().sendMessage(eb.build()).queue();
