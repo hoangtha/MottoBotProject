@@ -137,7 +137,7 @@ public class CmdFireball implements Commande {
 		}
 		else
 		{
-			msg = "Prend ça dans ta gueule <@"+Toraniso.getEffectiveName()+">";
+			msg = "Prend ça dans ta gueule <@"+Toraniso.getUser().getId()+">";
 			eb.setImage(FIREBALL_CAT);
 			eb.appendDescription(msg);
 			e.getChannel().sendMessage(eb.build()).queue();
