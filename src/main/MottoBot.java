@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import audio.AudioManagerMotto;
 import audio.GuildMusicManager;
 import commandes.CmdStats;
 import commandes.Commande;
-import javafx.util.Pair;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -49,7 +47,7 @@ public class MottoBot extends ListenerAdapter
 
 	public static final String DEFAULT_SEARCH = "nico_robin";
 
-	public static final String VERSION = "44.0";
+	public static final String VERSION = "44.0.3184.1.5487.568789.24897897641897789.15679874896417897896417987498496496749";
 	
     private final AudioPlayerManager playerManager;
 
@@ -64,12 +62,9 @@ public class MottoBot extends ListenerAdapter
 	private boolean stop;
 
 	private String token;
-	
-	private Random RNG;
 
 	public MottoBot(String token)
 	{
-		this.RNG = new Random();
 		this.token = token;
 		this.msgTab = new ArrayList<Message>();
 		this.commandesValides = new ArrayList<Commande>();
@@ -158,10 +153,6 @@ public class MottoBot extends ListenerAdapter
 	
 	private void run() {
 		this.stop = false;
-		int rand;
-		Hashtable<String, Pair<Instant, RandomEvent>> guildEvents = new Hashtable<String, Pair<Instant, RandomEvent>>();
-		List<String> eventGuilds = new ArrayList<String>();
-		eventGuilds.add("269163044427268096");
 		
 		while (!this.stop)
 		{
@@ -169,27 +160,6 @@ public class MottoBot extends ListenerAdapter
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-			for(Guild g : this.jda.getGuilds()) {
-				String guildID = g.getId();
-				if(eventGuilds.contains(guildID)) {
-					Pair<Instant, RandomEvent> guildEvent = guildEvents.getOrDefault(guildID, new Pair<Instant, RandomEvent>(Instant.EPOCH, null));
-					if(guildEvent.getKey().isBefore(Instant.now()))
-					{
-						if(guildEvent.getValue()==null || guildEvent.getValue().hasEnded())
-						{
-							rand = this.RNG.nextInt(100)+1;
-							
-							if(rand<5) 
-							{
-								RandomEvent event = new RandomEvent(g, this);
-								guildEvents.put(guildID, new Pair<Instant, RandomEvent>(Instant.now().plusSeconds(240), event));
-								this.jda.addEventListener(event);
-								event.run();
-							}
-						}
-					}
-				}
 			}
 		}
 		
