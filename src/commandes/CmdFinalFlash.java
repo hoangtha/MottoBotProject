@@ -37,10 +37,8 @@ public class CmdFinalFlash implements Commande {
 		EmbedBuilder gif = new EmbedBuilder();
 		gif.setColor(FLASH);
 		
-		
 		if(e.getAuthor().getId().equals("232603027641466882"))
 		{
-			
 			gif.setImage(FINALFLASH);
 			gif.appendDescription("Pour <@"+Momojean.getUser().getId()+"> FINAAAL FLAAAAAAAAAAASH!");
 			e.getChannel().sendMessage(gif.build()).queue();
@@ -57,9 +55,6 @@ public class CmdFinalFlash implements Commande {
 			gif.appendDescription("Oula, tu crois faire koi toi?!");
 			e.getChannel().sendMessage(gif.build()).queue();
 			return;
-		}
-
-		
+		}	
 	}
-
 }
