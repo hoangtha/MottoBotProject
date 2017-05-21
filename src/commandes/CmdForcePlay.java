@@ -34,38 +34,40 @@ public class CmdForcePlay implements Commande {
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		bot.addMsg(e.getMessage());
 		
-		bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
-	
-		boolean rechercheFlag = false;
-//		boolean inVoiceWithMottoBotFlag = false;
-		Document doc;
-		String url = "https://www.youtube.com/results?q=" + arguments;
-		String videoUrl = "";
-		
-		
-		if(e.getMember().getVoiceState().inVoiceChannel())
+		if(!arguments.equals(""))
 		{
-			if(!arguments.startsWith(("http")))
+			bot.getProperAudioManager().clearQueue(e.getTextChannel(), bot);
+		
+			boolean rechercheFlag = false;
+	//		boolean inVoiceWithMottoBotFlag = false;
+			Document doc;
+			String url = "https://www.youtube.com/results?q=" + arguments;
+			String videoUrl = "";
+			
+			if(e.getMember().getVoiceState().inVoiceChannel())
 			{
-				try {
-					doc = Jsoup.connect(url).get();
-					videoUrl = "https://www.youtube.com" + doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
-							.orElse("/watch?v=dQw4w9WgXcQ");
-					rechercheFlag = true;
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					videoUrl = "";
+				if(!arguments.startsWith(("http")))
+				{
+					try {
+						doc = Jsoup.connect(url).get();
+						videoUrl = "https://www.youtube.com" + doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
+								.orElse("/watch?v=dQw4w9WgXcQ");
+						rechercheFlag = true;
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						videoUrl = "";
+					}
 				}
+				else
+				{
+					videoUrl = arguments;
+				}
+				bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), videoUrl, bot, e.getMember().getVoiceState().getChannel(), rechercheFlag);
 			}
 			else
 			{
-				videoUrl = arguments;
+				e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> :  entre dans un channel vocal pour effectuer cette commande").queue();
 			}
-			bot.getProperAudioManager().loadAndPlay(e.getTextChannel(), videoUrl, bot, e.getMember().getVoiceState().getChannel(), rechercheFlag);
-		}
-		else
-		{
-			e.getChannel().sendMessage("<@"+e.getAuthor().getId()+"> :  entre dans un channel vocal pour effectuer cette commande").queue();
 		}
 	}
 }
