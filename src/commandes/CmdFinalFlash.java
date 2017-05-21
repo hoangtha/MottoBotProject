@@ -16,7 +16,7 @@ public class CmdFinalFlash implements Commande {
 
 	@Override
 	public String getName() {
-		return "Final Flash";
+		return "finalflash";
 	}
 
 	@Override
@@ -32,12 +32,14 @@ public class CmdFinalFlash implements Commande {
 		//ID Momojean <@262610896545644554>
 		//ID Ademage <@232603027641466882>
 		Member Momojean = e.getGuild().getMemberById("262610896545644554");
-		EmbedBuilder gif = new EmbedBuilder();
+		
 		
 		if(e.getAuthor().getId().equals("232603027641466882"))
 		{
+			EmbedBuilder gif = new EmbedBuilder();
+			gif.setColor(FLASH);
 			gif.setImage(FINALFLASH);
-			gif.appendDescription("Pour "+Momojean+" FINAAAL FLAAAAAAAAAAASH!");
+			gif.appendDescription("Pour "+Momojean.getEffectiveName()+" FINAAAL FLAAAAAAAAAAASH!");
 			e.getChannel().sendMessage(gif.build()).queue();
 		}
 		
