@@ -21,7 +21,7 @@ public class MottoPictureThread implements Runnable {
 	private static final int MAX_TRIES = 3; // Nombre maximal de recherches
 	private static final int NB_SEL = 3; // Nombre de sites sur lesquels on peut rechercher
 	public static final Color EXPLICIT = new Color(255, 20, 147);
-	public static final Color SAFE = new Color(0, 136, 204);
+	public static final Color SAFE = new Color(50, 205, 50);//vert, je prend le bleu pour la water
 	public static final Color QUESTIONABLE = new Color(255, 165, 0);
 	
 	private Random rand;
