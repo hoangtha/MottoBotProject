@@ -19,11 +19,13 @@ public class CmdWaterball implements Commande {
 	public static final String WATERBALL_HIT = "https://puu.sh/w93Nv/af31208b6a.gif"; //
 	public static final String WATERBALL_MERCURY = "https://puu.sh/w956x/9d0d157234.gif" ; //
 	public static final String WATERBALL_TORTANK = "https://puu.sh/w95vf/363c2d336b.gif"; //
+	public static final String WATERBALL_MASAMUNE = "https://puu.sh/w95KC/04848eaee2.gif" ;
 	public static final String WATERBALL_JINBEI = "https://puu.sh/w96bm/9074f50658.gif" ; //
 	public static final String WATERBALL_JUVIA = "https://puu.sh/w93Gz/62712ce14e.gif" ; //
 	public static final String WATERBALL_OP = "https://puu.sh/w956j/15bdaaace6.gif"; //
 	public static final String WATERBALL_REQUIEM = "https://puu.sh/w94gs/3158d439f0.gif" ; //
 	public static final String WATERBALL_NOTHING = "https://puu.sh/wa3KU/f4c44c88f9.gif" ; //
+ 
 	
 	
 	public static final Color Water  = new Color(0, 136, 204);
@@ -58,7 +60,7 @@ public class CmdWaterball implements Commande {
 		List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
 		// --
 		
-		int random = CmdWaterball.rand.nextInt(41);
+		int random = CmdWaterball.rand.nextInt(46);
 		
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setColor(Water);
@@ -71,7 +73,7 @@ public class CmdWaterball implements Commande {
 		
 		if(target != null)
 		{
-			msg = "<@"+target.getUser().getId()+"> a pris "+random+" de degats d' :droplet:";
+			msg = "<@"+target.getUser().getId()+"> a pris "+random+" de dégats d' :droplet:";
 			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
 				eb.setTitle(e.getAuthor().getName()+" is casting WATERBALL on himself...", null);
@@ -85,7 +87,7 @@ public class CmdWaterball implements Commande {
 					eb.setImage(WATERBALL_NULL);
 					msg = "<@"+caster.getUser().getId()+"> fait une danse de l'eau inutile";
 				}
-				else if (random == 40)
+				else if (random == 45)
 				{
 					eb.setImage(WATERBALL_REQUIEM);
 					msg = "<@"+target.getUser().getId()+"> est purifié par l':droplet:";
@@ -118,9 +120,13 @@ public class CmdWaterball implements Commande {
 				}
 				else if (random < 30)
 				{
+					eb.setImage(WATERBALL_MASAMUNE);
+				}
+				else if (random < 35)
+				{
 					eb.setImage(WATERBALL_JINBEI);
 				}
-				else if(random > 35)
+				else if(random > 40)
 				{
 					eb.setImage(WATERBALL_OP);
 					msg = "<@"+caster.getUser().getId()+"> crache sur <@"+target.getUser().getId()+"> pour "+random+" dégats";
