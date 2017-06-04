@@ -83,7 +83,7 @@ public class CmdFireball implements Commande {
 				if (random == 0)
 				{
 					eb.setImage(FIREBALL_NULL);
-					msg = "<@"+caster.getEffectiveName()+"> est à court de Magie et fait "+random+" dégats";
+					msg = "<@"+caster.getUser().getId()+"> est à court de Magie et fait "+random+" dégats";
 				}
 				// la bonne blague
 				else if (random == 6)
