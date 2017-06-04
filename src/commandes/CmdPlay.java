@@ -37,6 +37,7 @@ public class CmdPlay implements Commande {
 			Document doc;
 			String url = "https://www.youtube.com/results?q=" + arguments;
 			String videoUrl = "";
+			String videoUrlSuffix = "";
 			if(e.getMember().getVoiceState().inVoiceChannel())
 			{
 	//			List<Member> list = e.getMember().getVoiceState().getChannel().getMembers();
@@ -55,8 +56,17 @@ public class CmdPlay implements Commande {
 					{
 						try {
 							doc = Jsoup.connect(url).get();
-							videoUrl = "https://www.youtube.com" + doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
-									.orElse("/watch?v=dQw4w9WgXcQ");
+							videoUrl = "https://www.youtube.com";
+							videoUrlSuffix = doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
+									.orElse("");
+							if (videoUrlSuffix.equals(""))
+							{
+								videoUrl = "";
+							}
+							else
+							{
+								videoUrl += videoUrlSuffix;
+							}
 							rechercheFlag = true;
 						} catch (IOException e1) {
 							e1.printStackTrace();
