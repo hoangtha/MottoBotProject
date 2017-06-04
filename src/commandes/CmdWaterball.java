@@ -74,12 +74,12 @@ public class CmdWaterball implements Commande {
 			msg = "<@"+target.getUser().getId()+"> a pris "+random+" de degats d' :droplet:";
 			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
-				eb.setTitle("*"+e.getAuthor().getName()+" is casting WATERBALL on himself...*", null);
+				eb.setTitle(e.getAuthor().getName()+" is casting WATERBALL on himself...", null);
 				eb.setImage(WATERBALL_SELF);
 			}
 			else
 			{
-				eb.setTitle("*"+e.getMember().getEffectiveName()+" is casting WATERBALL on "+target.getEffectiveName()+"...*", null);
+				eb.setTitle(e.getMember().getEffectiveName()+" is casting WATERBALL on "+target.getEffectiveName()+"...", null);
 				if (random == 0)
 				{
 					eb.setImage(WATERBALL_NULL);
