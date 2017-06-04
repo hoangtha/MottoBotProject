@@ -74,12 +74,12 @@ public class CmdFireball implements Commande {
 			msg = "<@"+target.getUser().getId()+"> a pris "+random+" de points de degats de :fire:";
 			if(target.getEffectiveName().equals(caster.getEffectiveName()))
 			{
-				eb.setTitle("*"+e.getAuthor().getName()+" is casting Fireball on himself...*", null);
+				eb.setTitle(""+e.getAuthor().getName()+" is casting Fireball on himself...", null);
 				eb.setImage(FIREBALL_SELF);
 			}
 			else
 			{
-				eb.setTitle("*"+e.getMember().getEffectiveName()+" is casting Fireball on "+target.getEffectiveName()+"...*", null);
+				eb.setTitle(e.getMember().getEffectiveName()+" is casting Fireball on "+target.getEffectiveName()+"...", null);
 				if (random == 0)
 				{
 					eb.setImage(FIREBALL_NULL);
