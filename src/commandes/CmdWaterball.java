@@ -83,7 +83,7 @@ public class CmdWaterball implements Commande {
 				if (random == 0)
 				{
 					eb.setImage(WATERBALL_NULL);
-					msg = "<@"+caster.getEffectiveName()+"> fait une danse de l'eau inutile";
+					msg = "<@"+caster.getUser().getId()+"> fait une danse de l'eau inutile";
 				}
 				else if (random == 40)
 				{
@@ -93,7 +93,7 @@ public class CmdWaterball implements Commande {
 				else if (random < 5)
 				{
 					eb.setImage(WATERBALL_FAIL);
-					msg = "<@"+caster.getEffectiveName()+">, a noyé <@"+target.getUser().getId()+"> parce qu'il ne connait pas de sort, "+random+" de dommage";
+					msg = "<@"+caster.getUser().getId()+">, a noyé <@"+target.getUser().getId()+"> parce qu'il ne connait pas de sort, "+random+" de dommage";
 				}
 				else if (random < 8)
 				{
@@ -123,7 +123,7 @@ public class CmdWaterball implements Commande {
 				else if(random > 35)
 				{
 					eb.setImage(WATERBALL_OP);
-					msg = "<@"+caster.getEffectiveName()+"> crache sur <@"+target.getUser().getId()+"> pour "+random+" dégats";
+					msg = "<@"+caster.getUser().getId()+"> crache sur <@"+target.getUser().getId()+"> pour "+random+" dégats";
 				}
 				else
 				{
