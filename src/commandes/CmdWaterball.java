@@ -19,11 +19,12 @@ public class CmdWaterball implements Commande {
 	public static final String WATERBALL_HIT = "https://puu.sh/w93Nv/af31208b6a.gif"; //
 	public static final String WATERBALL_MERCURY = "https://puu.sh/w956x/9d0d157234.gif" ; //
 	public static final String WATERBALL_TORTANK = "https://puu.sh/w95vf/363c2d336b.gif"; //
-	public static final String WATERBALL_JUVIA = "https://puu.sh/w93Gz/62712ce14e.gif" ; //
 	public static final String WATERBALL_JINBEI = "https://puu.sh/w96bm/9074f50658.gif" ; //
+	public static final String WATERBALL_JUVIA = "https://puu.sh/w93Gz/62712ce14e.gif" ; //
 	public static final String WATERBALL_OP = "https://puu.sh/w956j/15bdaaace6.gif"; //
 	public static final String WATERBALL_REQUIEM = "https://puu.sh/w94gs/3158d439f0.gif" ; //
 	public static final String WATERBALL_NOTHING = "https://puu.sh/wa3KU/f4c44c88f9.gif" ; //
+	
 	
 	public static final Color Water  = new Color(0, 136, 204);
 	private static Random rand = new Random();

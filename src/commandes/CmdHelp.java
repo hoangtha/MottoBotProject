@@ -37,6 +37,7 @@ public class CmdHelp implements Commande {
 		mb.append("=mstats [pseudo] :    Affiche les stats du serveur/de quelqu'un\n");
 		mb.append("=mottorank :    		 Permet de changer votre titre\n");
 		mb.append("=fireball [cible]:    Lance une boule de feu sur la cible\n");
+		mb.append("=waterball [cible]:   Crache de l'eau sur ton adversaire\n");
 		mb.append("=mottoclear :      	 Nettoie un peu\n");
 		mb.append("=mottoninja :     	 Nettoie beaucoup\n");
 		mb.append("=mottohelp :       	 Affiche les commandes disponible\n\n");
