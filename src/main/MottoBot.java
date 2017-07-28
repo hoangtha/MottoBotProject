@@ -166,7 +166,7 @@ public class MottoBot extends ListenerAdapter
 		System.out.println("Arrêt.");
 		
 		this.tallyCounter.saveToFile();
-		this.jda.shutdown(true);
+		this.jda.shutdown();
 	}
 
 	@Override
