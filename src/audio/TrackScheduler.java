@@ -96,7 +96,6 @@ public class TrackScheduler extends AudioEventAdapter {
 		// (FINISHED or LOAD_FAILED)
 		if (endReason == AudioTrackEndReason.FINISHED || endReason == AudioTrackEndReason.STOPPED) {
 			nextTrack();
-			this.playlist.remove(0);
 		}
 	}
 
