@@ -35,7 +35,7 @@ public class CmdPlay implements Commande {
 			boolean rechercheFlag = false;
 //			boolean inVoiceWithMottoBotFlag = false;
 			Document doc;
-			String url = "https://www.youtube.com/results?q=" + arguments;
+			String url = "https://www.youtube.com/results?q=" + arguments.replace(" ", "+");
 			String videoUrl = "";
 			String videoUrlSuffix = "";
 			if(e.getMember().getVoiceState().inVoiceChannel())
