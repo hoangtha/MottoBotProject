@@ -59,3 +59,4 @@ bin/main/Main.class
 launch.bat
 *.jar
 userProgress.ser
+/emotes/*
