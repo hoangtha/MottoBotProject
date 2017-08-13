@@ -35,7 +35,7 @@ public class MottoPictureThread implements Runnable {
 	public MottoPictureThread(MessageReceivedEvent e, String arguments, ArrayList<String> robinArmy) {
 		this.rand = new Random();
 		this.e = e;
-		this.arguments = arguments;
+		this.arguments = arguments.replace(" ", "+");
 		this.robinArmy = robinArmy; 
 	}
 		
@@ -98,11 +98,13 @@ public class MottoPictureThread implements Runnable {
 					searchUrl += "+rating:safe-rating:e";
 				}
 			}
-			
+
 			try
 			{
-				doc = Jsoup.connect(searchUrl).get();
-				
+				doc = Jsoup.connect(searchUrl)
+			               .ignoreHttpErrors(true)
+			               .get();
+
 				if (selector==SANKAKU)
 				{
 					Elements elems = doc.select("span[class=thumb blacklisted] > a");
@@ -114,12 +116,17 @@ public class MottoPictureThread implements Runnable {
 					else {
 						pageUrl = null;
 					}
+					
+					
 				} 
 				else
 				{
+				
 					pageUrl = doc.select("span[class=plid]").stream().findAny().map(docs -> docs.html())
 							.orElse(null).substring(4);
 				}
+				
+				
 				
 				if(pageUrl!=null) {
 					doc = Jsoup.connect(pageUrl).get();
@@ -134,6 +141,7 @@ public class MottoPictureThread implements Runnable {
 			}
 			catch (IOException | NullPointerException err)
 			{
+				err.printStackTrace();
 				doc = null;
 				pageUrl = null;
 				imageUrl = null;
@@ -143,7 +151,7 @@ public class MottoPictureThread implements Runnable {
 			{
 				EmbedBuilder eb = new EmbedBuilder();
 				
-				String title = this.arguments;
+				String title = this.arguments.replace("+", " ");
 				if(this.arguments==null || this.arguments=="") {
 					title = "Motto !";
 				}
