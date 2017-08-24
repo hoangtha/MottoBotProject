@@ -153,4 +153,8 @@ public class AudioManagerMotto {
 		return playlistText;
 	}
 
+	public void shufflePlaylist(TextChannel channel, MottoBot bot) {
+		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
+		musicManager.scheduler.shufflePlaylist();
+	}
 }

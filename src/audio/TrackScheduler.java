@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,8 +19,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
 	private final BlockingQueue<AudioTrack> queue;
+	
 	private ArrayList<String> playlist;
-
+	
 	/**
 	 * @param player
 	 *            The audio player this scheduler uses
@@ -88,6 +90,32 @@ public class TrackScheduler extends AudioEventAdapter {
 		this.queue.clear();
 		this.playlist.clear();
 		this.player.startTrack(this.queue.poll(), false);
+	}
+	
+	public void shufflePlaylist()
+	{
+		ArrayList<AudioTrack> tempPlaylist;
+		tempPlaylist = new ArrayList<AudioTrack>();
+		int sizeOfPlaylist = this.playlist.size();
+		AudioTrack tmp = null;
+		for(int i = 0; i<sizeOfPlaylist; i++)
+		{
+			try
+			{
+				tmp = this.queue.take();
+				tempPlaylist.add(tmp);
+			}
+			catch (InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+		Collections.shuffle(tempPlaylist);
+		for(int i = 0; i<sizeOfPlaylist; i++)
+		{
+			this.playlist.set(i, tempPlaylist.get(sizeOfPlaylist-(i+1)).getInfo().title);
+			this.queue.add(tempPlaylist.remove(sizeOfPlaylist-(i+1)));
+		}
 	}
 
 	@Override
