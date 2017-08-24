@@ -155,6 +155,9 @@ public class AudioManagerMotto {
 
 	public void shufflePlaylist(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
-		musicManager.scheduler.shufflePlaylist();
+		if(musicManager.scheduler.getPlaylist().size()>1)
+		{
+			musicManager.scheduler.shufflePlaylist();
+		}
 	}
 }
