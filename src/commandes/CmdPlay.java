@@ -35,7 +35,7 @@ public class CmdPlay implements Commande {
 			boolean rechercheFlag = false;
 //			boolean inVoiceWithMottoBotFlag = false;
 			Document doc;
-			String url = "https://www.youtube.com/results?q=" + arguments.replace(" ", "+");
+			String url = "https://www.youtube.com/results?search_query=" + arguments.replace(" ", "+");
 			String videoUrl = "";
 			String videoUrlSuffix = "";
 			if(e.getMember().getVoiceState().inVoiceChannel())
@@ -55,9 +55,9 @@ public class CmdPlay implements Commande {
 					if(!arguments.startsWith(("http")))
 					{
 						try {
-							doc = Jsoup.connect(url).get();
-							videoUrl = "https://www.youtube.com";
-							videoUrlSuffix = doc.select("a[class=yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink      spf-link ]").stream().findAny().map(docs -> docs.attr("href"))
+							doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36").get();
+							videoUrl = "https://www.youtube.com/watch?v=";
+							videoUrlSuffix = doc.select("div#img-preload img").stream().findAny().map(docs -> docs.attr("src"))
 									.orElse("");
 							if (videoUrlSuffix.equals(""))
 							{
@@ -65,6 +65,7 @@ public class CmdPlay implements Commande {
 							}
 							else
 							{
+								videoUrlSuffix = videoUrlSuffix.split("/")[4];
 								videoUrl += videoUrlSuffix;
 							}
 							rechercheFlag = true;
