@@ -59,6 +59,11 @@
       <artifactId>slf4j-nop</artifactId>
       <version>1.7.22</version>
     </dependency>
+    <dependency>
+      <groupId>com.sedmelluq</groupId>
+      <artifactId>jda-nas</artifactId>
+      <version>1.0.5</version>
+    </dependency>
 	<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 	<dependency>
 	    <groupId>org.jsoup</groupId>

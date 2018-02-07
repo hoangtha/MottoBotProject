@@ -15,6 +15,7 @@ import javax.security.auth.login.LoginException;
 
 import org.reflections.Reflections;
 
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -31,7 +32,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class MottoBot extends ListenerAdapter
@@ -71,8 +71,8 @@ public class MottoBot extends ListenerAdapter
 		this.startTime = Instant.now();
 		
 		try {
-			this.jda = new JDABuilder(AccountType.BOT).setToken(token).setBulkDeleteSplittingEnabled(false).buildBlocking();
-		} catch (LoginException | IllegalArgumentException | InterruptedException e) {
+			this.jda = new JDABuilder(AccountType.BOT).setToken(token).setBulkDeleteSplittingEnabled(false).setAudioSendFactory(new NativeAudioSendFactory()).buildBlocking();
+		} catch (LoginException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		
