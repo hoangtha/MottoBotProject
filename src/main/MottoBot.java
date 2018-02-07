@@ -47,7 +47,7 @@ public class MottoBot extends ListenerAdapter
 
 	public static final String DEFAULT_SEARCH = "nico_robin";
 
-	public static final String VERSION = "44.0.3184.1.5487.568789.24897897641897789.15679874896417897896417987498496496750";
+	public static final String VERSION = "45";
 	
     private final AudioPlayerManager playerManager;
 
@@ -72,7 +72,7 @@ public class MottoBot extends ListenerAdapter
 		
 		try {
 			this.jda = new JDABuilder(AccountType.BOT).setToken(token).setBulkDeleteSplittingEnabled(false).buildBlocking();
-		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
+		} catch (LoginException | IllegalArgumentException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		
@@ -82,7 +82,7 @@ public class MottoBot extends ListenerAdapter
 		for(Guild g:this.jda.getGuilds()) {
 			System.out.println("\t"+g.getName()+" - "+g.getId());
 		}
-		this.jda.getPresence().setGame(Game.of("=motto"));
+		this.jda.getPresence().setGame(Game.playing("=motto"));
 		
 		this.musicManagers = new HashMap<>();
 		this.tallyCounter = new TallyCounter(this, "./userProgress.ser");
@@ -181,7 +181,7 @@ public class MottoBot extends ListenerAdapter
 			return;
 		}
 		
-		Matcher matcher = this.commandPattern.matcher(event.getMessage().getContent());
+		Matcher matcher = this.commandPattern.matcher(event.getMessage().getContentRaw());
         if (matcher.matches()) {
         	// Potentielle commande
         	String commande = matcher.group(1).toLowerCase();
@@ -190,7 +190,7 @@ public class MottoBot extends ListenerAdapter
         }
 		else {
 			// Message lambda
-			if (event.getMessage().getContent().toLowerCase().contains("motto bot"))
+			if (event.getMessage().getContentRaw().toLowerCase().contains("motto bot"))
 			{
 				event.getChannel().sendTyping().queue();
 				Random rand = new Random();

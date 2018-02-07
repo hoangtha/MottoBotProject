@@ -40,7 +40,7 @@ public class CmdNinja implements Commande {
 			List<Message> l = mh.getRetrievedHistory();
 			for(Message m:l) {
 				if(m.getCreationTime().isAfter(twoDaysAgo) && m.getCreationTime().isBefore(oldest)) {
-					if(m.getAuthor().getName()==me.getName() || m.getContent().startsWith("=")) {
+					if(m.getAuthor().getName()==me.getName() || m.getContentRaw().startsWith("=")) {
 						mbot.add(m.getId());
 						oldest = m.getCreationTime();
 					}

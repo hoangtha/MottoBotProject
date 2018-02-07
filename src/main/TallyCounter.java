@@ -282,7 +282,7 @@ public class TallyCounter extends ListenerAdapter {
 		if(this.lastMessage.get(guildId+":"+userId)==null || OffsetDateTime.now().isAfter(this.lastMessage.get(guildId+":"+userId).plusSeconds(1))) {
 			up.messages++;
 			this.lastMessage.put(guildId+":"+userId, OffsetDateTime.now());
-			up.rewardMessageExperience(event.getMessage().getContent().length());
+			up.rewardMessageExperience(event.getMessage().getContentRaw().length());
 		}
 		checkLevelUp(up, guildId);
 		guildTable.putIfAbsent(userName, up);
