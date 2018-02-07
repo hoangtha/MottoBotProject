@@ -30,14 +30,16 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageHistory;
+import net.dv8tion.jda.core.entities.Message.MentionType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class MottoBot extends ListenerAdapter
 {
 	// https://discordapp.com/oauth2/authorize?client_id=282539502818426892&scope=bot&permissions=-1
 	private Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
+	private Pattern wordPattern = Pattern.compile("([a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`:@#-]{4,})");
 	
 	private JDA jda;
 
@@ -47,7 +49,7 @@ public class MottoBot extends ListenerAdapter
 
 	public static final String DEFAULT_SEARCH = "nico_robin";
 
-	public static final String VERSION = "45";
+	public static final String VERSION = "46";
 	
     private final AudioPlayerManager playerManager;
 
@@ -62,6 +64,8 @@ public class MottoBot extends ListenerAdapter
 	private boolean stop;
 
 	private String token;
+
+	private final Random rand = new Random();
 
 	public MottoBot(String token)
 	{
@@ -190,8 +194,10 @@ public class MottoBot extends ListenerAdapter
         }
 		else {
 			// Message lambda
-			if (event.getMessage().getContentRaw().toLowerCase().contains("motto bot"))
-			{
+			String msgStripped = event.getMessage().getContentStripped().toLowerCase();
+	    	
+			if(event.getMessage().isMentioned(this.jda.getSelfUser(), MentionType.USER)
+	    			|| event.getMessage().getContentRaw().toLowerCase().contains(this.jda.getSelfUser().getName().toLowerCase())) {
 				event.getChannel().sendTyping().queue();
 				Random rand = new Random();
 				int randomizedMsgIndex = rand.nextInt(12);
@@ -240,6 +246,9 @@ public class MottoBot extends ListenerAdapter
 				}
 				event.getChannel().sendMessage(msg).queue();
 			}
+			else if(msgStripped.length()<60 && (msgStripped.contains("c'est pas faux") || msgStripped.contains("c pas faux"))) {
+	    		event.getChannel().getHistoryBefore(event.getMessage(), 3).queue(h -> {laBotteSecrete(event, h);});
+	    	}
 		}
 	}
 	
@@ -306,4 +315,30 @@ public class MottoBot extends ListenerAdapter
 	public String getToken() {
 		return this.token;
 	}
+	
+	private void laBotteSecrete(MessageReceivedEvent event, MessageHistory history) {
+    	ArrayList<String> wordsList = new ArrayList<String>();
+    	
+    	for(Message m : history.getRetrievedHistory()) {
+    		if(!m.getAuthor().equals(event.getAuthor()) && m.getContentStripped().length()>20) {
+    	    	Matcher matcher = this.wordPattern.matcher(m.getContentStripped());
+    	        while (matcher.find()) {
+    	        	if(!(matcher.group(1).startsWith(":")||matcher.group(1).startsWith("@")||matcher.group(1).startsWith("#")))
+    	        		wordsList.add(matcher.group(1));
+    	        }
+    		}
+    		if(!wordsList.isEmpty()) {
+    			break;
+    		}
+    	}
+    	if(wordsList.isEmpty())
+    		return;
+        
+    	String word = wordsList.get(this.rand.nextInt(wordsList.size()));
+    	
+    	if(this.rand.nextBoolean())
+			event.getChannel().sendMessage("Sans rire <@"+event.getAuthor().getId()+">, tu sais pas ce que ça veut dire \"" + word + "\" ?").queue();
+		else
+			event.getChannel().sendMessage("C'est \"" + word + "\" que t'as pas compris <@"+event.getAuthor().getId()+"> ?").queue();
+    }
 }
