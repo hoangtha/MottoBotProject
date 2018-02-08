@@ -60,3 +60,5 @@ launch.bat
 *.jar
 userProgress.ser
 /emotes/*
+launch Motto.bat
+launch Test.bat

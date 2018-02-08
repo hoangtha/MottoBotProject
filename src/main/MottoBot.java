@@ -26,6 +26,7 @@ import commandes.Commande;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
@@ -49,7 +50,7 @@ public class MottoBot extends ListenerAdapter
 
 	public static final String DEFAULT_SEARCH = "nico_robin";
 
-	public static final String VERSION = "46";
+	public static final String VERSION = "47";
 	
     private final AudioPlayerManager playerManager;
 
@@ -336,9 +337,11 @@ public class MottoBot extends ListenerAdapter
         
     	String word = wordsList.get(this.rand.nextInt(wordsList.size()));
     	
+    	MessageBuilder mb = new MessageBuilder();
+    	mb.setTTS(true);
     	if(this.rand.nextBoolean())
-			event.getChannel().sendMessage("Sans rire <@"+event.getAuthor().getId()+">, tu sais pas ce que ça veut dire \"" + word + "\" ?").queue();
+			event.getChannel().sendMessage(mb.append("Sans rire <@"+event.getAuthor().getId()+">, tu sais pas ce que ça veut dire \"" + word + "\" ?").build()).queue();
 		else
-			event.getChannel().sendMessage("C'est \"" + word + "\" que t'as pas compris <@"+event.getAuthor().getId()+"> ?").queue();
+			event.getChannel().sendMessage(mb.append("C'est \"" + word + "\" que t'as pas compris <@"+event.getAuthor().getId()+"> ?").build()).queue();
     }
 }
