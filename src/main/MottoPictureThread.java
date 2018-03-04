@@ -43,8 +43,9 @@ public class MottoPictureThread implements Runnable {
 	public void run() {
 		this.e.getChannel().sendTyping().queue();
 		
-		boolean isFromRobinArmy = this.robinArmy.contains(this.e.getGuild().getId()); // sale
-		boolean channelIsNSFW = this.e.getChannel().getName().toLowerCase().contains("nsfw");
+		boolean isFromRobinArmy = this.robinArmy.contains(this.e.getGuild().getId()); // sale sale2
+		boolean channelIsNSFW = this.e.getChannel().getName().toLowerCase().contains("nsfw") || this.e.getTextChannel().isNSFW(); // oui il le fallais depuis la mise a jour de Discord
+		
 		
 		int selector = this.rand.nextInt(3);
 		int nbRecherche = 0;

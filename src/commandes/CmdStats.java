@@ -62,7 +62,7 @@ public class CmdStats implements Commande {
 			{
 				arguments = arguments.substring(1);
 			}
-			List<Member> targetList = e.getGuild().getMembersByEffectiveName(arguments, true);
+			List<Member> targetList = e.getGuild().getMembersByName(arguments, true);
 			Member target = null;
 			if(targetList.size()>=1) {
 				target = targetList.get(0);
