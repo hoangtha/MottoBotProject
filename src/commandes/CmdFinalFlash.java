@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdFinalFlash implements Commande {
 	
+	// TODO: gif expiré
 	public static final String FINALFLASH = "https://puu.sh/vWsxH/0c39eaf499.gif" ;
 	public static final String FINALFAIL = "https://puu.sh/vWQaM/b3a72c682c.gif";
 	public static final String FINALGIN = "https://puu.sh/vWQoz/698f0fc128.gif";

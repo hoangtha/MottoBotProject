@@ -57,6 +57,7 @@ public class CmdPlay implements Commande {
 						try {
 							doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36").get();
 							videoUrl = "https://www.youtube.com/watch?v=";
+							// TODO: out-of-date il faut changer qqchose sur le critère du select, mais je sais pas pk ça marche encore
 							videoUrlSuffix = doc.select("div#img-preload img").stream().findAny().map(docs -> docs.attr("src"))
 									.orElse("");
 							if (videoUrlSuffix.equals(""))
