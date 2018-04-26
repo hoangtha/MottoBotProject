@@ -44,6 +44,7 @@ public class TallyCounter extends ListenerAdapter {
 		this.activeGuilds = new ArrayList<String>();
 		this.activeGuilds.add("269163044427268096");// FP
 		this.activeGuilds.add("228161553986355212");// Ehreon
+		this.activeGuilds.add("309387436482494464");// dani friend
 		this.bot = bot;
 		
 		try {
