@@ -15,14 +15,15 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 public class AudioManagerMotto {
-	
+
 	public AudioManagerMotto() {
-		
+
 	}
 
 	public void loadAndPlay(final TextChannel channel, final String trackUrl, MottoBot bot, VoiceChannel vChannel, boolean rechercheFlag) {
 
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
+		musicManager.player.setVolume(12);
 
 		AudioPlayerManager playerManager = bot.getPlayerManager();
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
@@ -72,7 +73,7 @@ public class AudioManagerMotto {
 			}
 		});
 	}
-	
+
 	private synchronized static GuildMusicManager getGuildAudioPlayer(Guild guild, MottoBot bot) {
 		long guildId = Long.parseLong(guild.getId());
 		GuildMusicManager musicManager = bot.getMusicManagers().get(guildId);
@@ -83,7 +84,7 @@ public class AudioManagerMotto {
 		}
 
 		guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
-		
+
 		return musicManager;
 	}
 
@@ -92,7 +93,7 @@ public class AudioManagerMotto {
 
 		musicManager.scheduler.queue(track);
 	}
-	
+
 	public void playList(Guild guild, GuildMusicManager musicManager, AudioPlaylist playlist, VoiceChannel vChannel) {
 		connectToVoiceChannel(guild.getAudioManager() , vChannel);
 
@@ -105,7 +106,7 @@ public class AudioManagerMotto {
 		{
 			musicManager.scheduler.nextTrack();
 		}
-		
+
 		if(musicManager.scheduler.getPlaylist().size()>0)
 		{
 			channel.sendMessage(":musical_note: Passer à la prochaine musique : "+musicManager.player.getPlayingTrack().getInfo().title).queue();
@@ -113,16 +114,16 @@ public class AudioManagerMotto {
 	}
 
 	public static void connectToVoiceChannel(AudioManager audioManager, VoiceChannel vChannel) {
-		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) 	
+		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect())
 			audioManager.openAudioConnection(vChannel);
 	}
-	
+
 	public void clearQueue(TextChannel channel, MottoBot bot) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		musicManager.player.stopTrack();
 		musicManager.scheduler.clearPlaylist();
 	}
-	
+
 	public String showPlaylist(TextChannel channel, MottoBot bot, int index) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild(), bot);
 		String playlistText = "";
@@ -140,7 +141,7 @@ public class AudioManagerMotto {
 						break;
 					}
 					playlistText = playlistText + (i+1) + ". " + playlist.get(i) + "\n";
-					
+
 				}
 			}
 			playlistText = playlistText + "```";

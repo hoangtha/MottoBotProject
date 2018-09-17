@@ -39,27 +39,28 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class MottoBot extends ListenerAdapter
 {
 	// https://discordapp.com/oauth2/authorize?client_id=282539502818426892&scope=bot&permissions=-1
-	private Pattern commandPattern = Pattern.compile("^=([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
+	private static final String COMMAND_SYMBOL = "="; // regex format + java escape
+	private Pattern commandPattern = Pattern.compile("^"+COMMAND_SYMBOL+"([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 	private Pattern wordPattern = Pattern.compile("([a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`:@#-]{4,})");
-	
+
 	private JDA jda;
 
 	private List<Message> msgTab;
-	
+
 	private List<Commande> commandesValides;
 
 	public static final String DEFAULT_SEARCH = "nico_robin";
 
-	public static final String VERSION = "48-beta";
-	
+	public static final String VERSION = "50";
+
     private final AudioPlayerManager playerManager;
 
 	private final Map<Long, GuildMusicManager> musicManagers;
-	
+
 	private AudioManagerMotto properAudioManager;
-	
+
 	private TallyCounter tallyCounter;
-	
+
 	private Instant startTime;
 
 	private boolean stop;
@@ -74,13 +75,13 @@ public class MottoBot extends ListenerAdapter
 		this.msgTab = new ArrayList<Message>();
 		this.commandesValides = new ArrayList<Commande>();
 		this.startTime = Instant.now();
-		
+
 		try {
 			this.jda = new JDABuilder(AccountType.BOT).setToken(token).setBulkDeleteSplittingEnabled(false).setAudioSendFactory(new NativeAudioSendFactory()).buildBlocking();
 		} catch (LoginException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("Connecté avec: " + this.jda.getSelfUser().getName());
 		int nbServeurs = this.jda.getGuilds().size();
 		System.out.println("Le bot est autorisé sur " + nbServeurs + " serveur" + (nbServeurs > 1 ? "s" : ""));
@@ -88,14 +89,14 @@ public class MottoBot extends ListenerAdapter
 			System.out.println("\t"+g.getName()+" - "+g.getId());
 		}
 		this.jda.getPresence().setGame(Game.playing("=motto"));
-		
+
 		this.musicManagers = new HashMap<>();
 		this.tallyCounter = new TallyCounter(this, "./userProgress.ser");
 
 		this.playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(this.playerManager);
-		AudioSourceManagers.registerLocalSource(this.playerManager); 
-		this.properAudioManager = new AudioManagerMotto(); 
+		AudioSourceManagers.registerLocalSource(this.playerManager);
+		this.properAudioManager = new AudioManagerMotto();
 	}
 
 	public static void main(String[] args) throws InterruptedException
@@ -114,13 +115,13 @@ public class MottoBot extends ListenerAdapter
 			}
 
 			System.out.println("Lancement dans " + sec + " secondes.");
-			
+
 			try {
 				Thread.sleep(1000*sec);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			System.out.println("Lancement !");
 		}
 		MottoBot m = new MottoBot(args[0]);
@@ -155,10 +156,10 @@ public class MottoBot extends ListenerAdapter
 	public void setStop(boolean stop) {
 		this.stop = stop;
 	}
-	
+
 	private void run() {
 		this.stop = false;
-		
+
 		while (!this.stop)
 		{
 			try {
@@ -167,9 +168,9 @@ public class MottoBot extends ListenerAdapter
 				e.printStackTrace();
 			}
 		}
-		
+
 		System.out.println("Arrêt.");
-		
+
 		this.tallyCounter.saveToFile();
 		this.jda.shutdown();
 	}
@@ -185,7 +186,7 @@ public class MottoBot extends ListenerAdapter
 		{
 			return;
 		}
-		
+
 		Matcher matcher = this.commandPattern.matcher(event.getMessage().getContentRaw());
         if (matcher.matches()) {
         	// Potentielle commande
@@ -196,7 +197,7 @@ public class MottoBot extends ListenerAdapter
 		else {
 			// Message lambda
 			String msgStripped = event.getMessage().getContentStripped().toLowerCase();
-	    	
+
 			if(event.getMessage().isMentioned(this.jda.getSelfUser(), MentionType.USER)
 	    			|| event.getMessage().getContentRaw().toLowerCase().contains(this.jda.getSelfUser().getName().toLowerCase())) {
 				event.getChannel().sendTyping().queue();
@@ -252,7 +253,7 @@ public class MottoBot extends ListenerAdapter
 	    	}
 		}
 	}
-	
+
 	private void lireCommande(MessageReceivedEvent e, String cmdString, String arguments) {
         Optional<Commande> commande = this.commandesValides.stream()
                 .filter(com -> com.getName().equalsIgnoreCase(cmdString) || (com.getAliases() != null && com.getAliases().contains(cmdString)))
@@ -275,7 +276,7 @@ public class MottoBot extends ListenerAdapter
 	public JDA getJda() {
 		return this.jda;
 	}
-    
+
     public TallyCounter getTallyCounter() {
 		return this.tallyCounter;
 	}
@@ -283,19 +284,19 @@ public class MottoBot extends ListenerAdapter
 	public List<Message> getMsgTab() {
 		return this.msgTab;
 	}
-	
+
 	public void setMsgTab(List<Message> msgTab) {
 		this.msgTab = msgTab;
 	}
-	
+
 	public AudioPlayerManager getPlayerManager() {
 		return this.playerManager;
 	}
-	
+
 	public Map<Long, GuildMusicManager> getMusicManagers() {
 		return this.musicManagers;
 	}
-	
+
 	public AudioManagerMotto getProperAudioManager() {
 		return this.properAudioManager;
 	}
@@ -316,10 +317,10 @@ public class MottoBot extends ListenerAdapter
 	public String getToken() {
 		return this.token;
 	}
-	
+
 	private void laBotteSecrete(MessageReceivedEvent event, MessageHistory history) {
     	ArrayList<String> wordsList = new ArrayList<String>();
-    	
+
     	for(Message m : history.getRetrievedHistory()) {
     		if(!m.getAuthor().equals(event.getAuthor()) && m.getContentStripped().length()>20) {
     	    	Matcher matcher = this.wordPattern.matcher(m.getContentStripped());
@@ -334,9 +335,9 @@ public class MottoBot extends ListenerAdapter
     	}
     	if(wordsList.isEmpty())
     		return;
-        
+
     	String word = wordsList.get(this.rand.nextInt(wordsList.size()));
-    	
+
     	MessageBuilder mb = new MessageBuilder();
     	mb.setTTS(true);
     	if(this.rand.nextBoolean())
