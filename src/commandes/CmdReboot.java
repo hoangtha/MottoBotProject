@@ -25,7 +25,7 @@ public class CmdReboot implements Commande {
 	public void run(MottoBot bot, MessageReceivedEvent e, String arguments) {
 		if(bot.admins().contains(e.getAuthor().getId())) {
 			try {
-				ProcessBuilder pb = new ProcessBuilder("java","-jar","MottoBot.jar",bot.getToken(),"5");
+				ProcessBuilder pb = new ProcessBuilder("java","-jar","MottoBot.jar",bot.getToken(),"10");
 				pb.inheritIO();
 				pb.start();
 				bot.setStop(true);
